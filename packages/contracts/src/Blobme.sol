@@ -1,19 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-
-interface IErc20Mint {
-    function mint(address account, uint256 value) external;
-}
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
+import "./BlomToken.sol";
 
 /**
  * @dev Implementation of Blobme protocol allowing mining BLOM tokens
  * through sending EIP-4844 blob tx.
  */
 contract Blobme is Ownable, Pausable {
+    /**
+     * @dev Emitted when a blob with hash `blobHash` is mined by `miner`.
+     */
     event Mine(address indexed miner, bytes32 blobHash);
+
+    /**
+     * @dev Emitted when `value` tokens are claimed to `to` by `miner`.
+     */
     event Claim(address indexed miner, address indexed to, uint256 value);
 
     struct UserCounter {
@@ -32,7 +36,7 @@ contract Blobme is Ownable, Pausable {
     uint256 public constant EPOCH_SECONDS = 10800; // 3 hours
     uint256 public constant HALVING_EPOCHS = 240; // halving every month
 
-    address public immutable blomToken;
+    BlomToken public immutable blomToken;
 
     uint256 public epochReward = 3456000000 * 1e18;
 
@@ -45,10 +49,8 @@ contract Blobme is Ownable, Pausable {
 
     mapping(bytes32 => bool) public blobHashes;
 
-    constructor(address blomToken_, uint256 startEpoch_) Ownable(_msgSender()) {
-        blomToken = blomToken_;
-        startEpoch = startEpoch_;
-        nextHalvingEpoch = startEpoch + HALVING_EPOCHS;
+    constructor() Ownable(_msgSender()) {
+        blomToken = new BlomToken();
     }
 
     /**
@@ -87,6 +89,8 @@ contract Blobme is Ownable, Pausable {
 
     function _check() internal {
         uint256 currentEpoch = epoch();
+        require(startEpoch > 0 && currentEpoch >= startEpoch, "not started");
+
         // Stats.
         if (stats.epoch < currentEpoch) {
             if (stats.epoch > 0) {
@@ -130,7 +134,7 @@ contract Blobme is Ownable, Pausable {
         if (userBlobs > 0) {
             uint256 reward = _claimableReward(userEpoch, userBlobs);
             address mintTo = to == address(0) ? _msgSender() : to;
-            IErc20Mint(blomToken).mint(mintTo, reward);
+            blomToken.mint(mintTo, reward);
 
             emit Claim(_msgSender(), mintTo, reward);
 
@@ -170,7 +174,7 @@ contract Blobme is Ownable, Pausable {
      * @dev Set the start epoch.
      */
     function setStartEpoch(uint256 startEpoch_) external onlyOwner {
-        require(startEpoch > epoch(), "has started");
+        require(startEpoch == 0 || startEpoch > epoch(), "has started");
         require(startEpoch_ > epoch(), "start epoch can only be set in the future");
         startEpoch = startEpoch_;
         nextHalvingEpoch = startEpoch + HALVING_EPOCHS;

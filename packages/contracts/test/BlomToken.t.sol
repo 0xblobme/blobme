@@ -9,7 +9,7 @@ contract TestBlomToken is Test {
     BlomToken token;
 
     function setUp() public {
-        token = new BlomToken(address(this));
+        token = new BlomToken();
     }
 
     function testMint() public {

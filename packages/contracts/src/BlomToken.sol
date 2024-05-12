@@ -11,8 +11,8 @@ contract BlomToken is ERC20, ERC20Permit {
 
     address public minter;
 
-    constructor(address minter_) ERC20("Blom", "BLOM") ERC20Permit("Blom") {
-        minter = minter_;
+    constructor() ERC20("Blom", "BLOM") ERC20Permit("Blom") {
+        minter = _msgSender();
     }
 
     function mint(address account, uint256 value) external {
