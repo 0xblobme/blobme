@@ -3,18 +3,17 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 
-import "src/BLOMToken.sol";
+import "src/BlomToken.sol";
 
-contract TestToken is Test {
-  BLOMToken token;
+contract TestBlomToken is Test {
+    BlomToken token;
 
-  function setUp() public {
-    token = new BLOMToken(address(1));
-  }
+    function setUp() public {
+        token = new BlomToken(address(this));
+    }
 
-  function testMint() public {
-    vm.prank(address(1));
-    token.mint(address(1), 100);
-    assertEq(token.balanceOf(address(1)), 100);
-  }
+    function testMint() public {
+        token.mint(address(this), 100);
+        assertEq(token.balanceOf(address(this)), 100);
+    }
 }

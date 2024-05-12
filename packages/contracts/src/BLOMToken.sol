@@ -6,18 +6,18 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract BLOMToken is ERC20, ERC20Permit {
-  using SafeERC20 for IERC20;
+contract BlomToken is ERC20, ERC20Permit {
+    using SafeERC20 for IERC20;
 
-  address public minter;
+    address public minter;
 
-  constructor(address minter_) ERC20("Blom", "BLOM") ERC20Permit("Blom") {
-    minter = minter_;
-  }
+    constructor(address minter_) ERC20("Blom", "BLOM") ERC20Permit("Blom") {
+        minter = minter_;
+    }
 
-  function mint(address account, uint256 value) external {
-    require(_msgSender() == minter, "only minter can mint");
+    function mint(address account, uint256 value) external {
+        require(_msgSender() == minter, "only minter can mint");
 
-    _mint(account, value);
-  }
+        _mint(account, value);
+    }
 }
