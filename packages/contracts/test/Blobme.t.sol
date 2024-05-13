@@ -21,6 +21,7 @@ contract TestBlobme is Test {
     }
 
     function testEpoch() public {
+        assertEq(block.number, 1);
         assertEq(block.timestamp, 1);
         assertEq(blobme.epoch(), 0);
 
@@ -64,14 +65,97 @@ contract TestBlobme is Test {
 
         blobme.setStartEpoch(1);
 
-        vm.warp(blobme.EPOCH_SECONDS());
+        blobme.setRecipient(alice);
+
+        advanceEpochs(1);
 
         vm.blobhashes(blobHashes);
-        blobme.mine(address(alice));
+        blobme.mine();
 
-        vm.roll(2);
+        advanceBlocks(1);
+
         vm.blobhashes(new bytes32[](0));
         vm.expectRevert("invalid blob hash");
-        blobme.mine(address(alice));
+        blobme.mine();
+
+        assertEq(blobme.claimableReward(address(this)), 0);
+
+        advanceEpochs(1);
+
+        assertEq(blobme.claimableReward(address(this)), blobme.INITIAL_EPOCH_REWARD());
+
+        blobme.claimReward(address(this));
+        assertEq(blomToken.balanceOf(alice), blobme.INITIAL_EPOCH_REWARD());
+        assertEq(blobme.claimableReward(address(this)), 0);
+
+        vm.prank(bob);
+        vm.blobhashes(blobHashes);
+        blobme.mine();
+
+        advanceBlocks(1);
+
+        vm.prank(bob);
+        vm.blobhashes(blobHashes);
+        blobme.mine();
+
+        vm.prank(alice);
+        vm.blobhashes(blobHashes);
+        blobme.mine();
+
+        assertEq(blobme.claimableReward(alice), 0);
+        assertEq(blobme.claimableReward(bob), 0);
+
+        advanceEpochs(1);
+
+        assertEq(blobme.claimableReward(alice), blobme.INITIAL_EPOCH_REWARD() / 3);
+        assertEq(blobme.claimableReward(bob), (blobme.INITIAL_EPOCH_REWARD() / 3) * 2);
+        assertEq(blobme.claimableReward(alice) + blobme.claimableReward(bob), blobme.INITIAL_EPOCH_REWARD());
+
+        vm.prank(alice);
+        blobme.claimReward(alice);
+        vm.prank(bob);
+        blobme.claimReward(bob);
+
+        blobme.pause();
+        vm.expectRevert();
+        blobme.mine();
+
+        blobme.unpause();
+        blobme.mine();
+    }
+
+    function testHalvingEpochs() public {
+        blobme.setStartEpoch(1);
+
+        assertEq(blobme.epochReward(1), blobme.INITIAL_EPOCH_REWARD());
+
+        assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS());
+
+        advanceEpochs(blobme.HALVING_EPOCHS());
+        assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS());
+
+        advanceEpochs(1);
+        assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS() * 2);
+
+        assertEq(blobme.epochReward(blobme.HALVING_EPOCHS()), blobme.INITIAL_EPOCH_REWARD());
+        assertEq(blobme.epochReward(1 + blobme.HALVING_EPOCHS()), blobme.INITIAL_EPOCH_REWARD() / 2);
+        assertEq(blobme.epochReward(blobme.HALVING_EPOCHS() * 2), blobme.INITIAL_EPOCH_REWARD() / 2);
+        assertEq(blobme.epochReward(1 + blobme.HALVING_EPOCHS() * 2), blobme.INITIAL_EPOCH_REWARD() / 4);
+        assertEq(blobme.epochReward(blobme.HALVING_EPOCHS() * 3), blobme.INITIAL_EPOCH_REWARD() / 4);
+        assertEq(blobme.epochReward(blobme.HALVING_EPOCHS() * 4), blobme.INITIAL_EPOCH_REWARD() / 8);
+    }
+
+    function advanceBlocks(uint n) internal {
+        uint blockInterval = 12;
+        vm.roll(block.number + n);
+        vm.warp(block.timestamp + blockInterval * n);
+        console.log("block %s, time: %s, epoch: %s", block.number, block.timestamp, blobme.epoch());
+    }
+
+    function advanceEpochs(uint n) internal {
+        uint blockInterval = 12;
+        vm.roll(block.number + (n * blobme.EPOCH_SECONDS()) / blockInterval);
+        vm.warp(block.timestamp + blobme.EPOCH_SECONDS() * n);
+        console.log("block %s, time: %s, epoch: %s", block.number, block.timestamp, blobme.epoch());
     }
 }
