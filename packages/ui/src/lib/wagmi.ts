@@ -1,5 +1,5 @@
-import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia, localhost } from 'wagmi/chains'
+import { http, createConfig } from "wagmi";
+import { mainnet, sepolia, localhost } from "wagmi/chains";
 
 export const wagmiConfig = createConfig({
   chains: [mainnet, sepolia, localhost],
@@ -8,4 +8,4 @@ export const wagmiConfig = createConfig({
     [sepolia.id]: http(),
     [localhost.id]: http(),
   },
-})
+});

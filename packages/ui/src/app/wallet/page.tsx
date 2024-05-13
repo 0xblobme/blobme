@@ -1,3 +1,9 @@
+import { WalletCard } from "@/components/wallet-card";
+
 export default function WalletPage() {
-  return <></>;
+  return <>
+    <section className="container py-8">
+      <WalletCard />
+    </section>
+  </>;
 }
