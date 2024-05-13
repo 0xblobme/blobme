@@ -4,10 +4,24 @@ evm_version = "cancun"
 ffi = false
 fuzz_runs = 256
 optimizer = true
-optimizer_runs = 3000
+optimizer_runs = 1_000_000
 verbosity = 2
 allow_paths = [
   # pnpm symlinks to the project root's node_modules
   "../../node_modules",
 ]
 libs = ["node_modules", "lib"]
+
+[rpc_endpoints]
+sepolia = "https://rpc.sepolia.org"
+holesky = "https://holesky.drpc.org"
+
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+holesky = { key = "${ETHERSCAN_API_KEY}" }
+
+[profile.sepolia]
+eth_rpc_url = "https://rpc.sepolia.org"
+
+[profile.holesky]
+eth_rpc_url = "https://holesky.drpc.org"

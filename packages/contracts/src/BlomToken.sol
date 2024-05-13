@@ -20,4 +20,10 @@ contract BlomToken is ERC20, ERC20Permit {
 
         _mint(account, value);
     }
+
+    function setMinter(address newMinter) external {
+        require(_msgSender() == minter, "only minter can set minter");
+
+        minter = newMinter;
+    }
 }

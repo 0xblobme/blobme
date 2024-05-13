@@ -13,8 +13,9 @@ contract TestBlobme is Test {
     address bob = makeAddr("bob");
 
     function setUp() public {
-        blobme = new Blobme();
-        blomToken = blobme.blomToken();
+        blomToken = new BlomToken();
+        blobme = new Blobme(address(blomToken));
+        blomToken.setMinter(address(blobme));
 
         vm.deal(alice, 1 ether);
         vm.deal(bob, 1 ether);

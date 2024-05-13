@@ -8,7 +8,8 @@
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write \"src/**/*.sol\" && prettier --write \"script/**/*.sol\"",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "test": "forge test"
+    "test": "forge test",
+    "deploy:holesky": "FOUNDRY_PROFILE=holesky forge script script/DeployBlobme.s.sol:DeployBlobme --broadcast --verify -vvvv"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.0.2",

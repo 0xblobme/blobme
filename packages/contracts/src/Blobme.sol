@@ -48,8 +48,8 @@ contract Blobme is Ownable, Pausable {
 
     mapping(bytes32 => bool) public blobHashes;
 
-    constructor() Ownable(_msgSender()) {
-        blomToken = new BlomToken();
+    constructor(address blomToken_) Ownable(_msgSender()) {
+        blomToken = BlomToken(blomToken_);
     }
 
     /**
