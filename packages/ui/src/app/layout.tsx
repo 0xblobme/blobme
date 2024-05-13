@@ -4,6 +4,7 @@ import { Inter as FontSans } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { cn } from "@/lib/utils";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const fontSans = FontSans({
@@ -29,9 +30,11 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <Header />
-        <main className="flex-grow flex flex-col">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="flex-grow flex flex-col">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
