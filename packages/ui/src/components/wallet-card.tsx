@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useMiner } from "@/hooks/use-miner";
 
 export function WalletCard() {
-    const { minerAddress, generateWallet } = useMiner()
+  const { minerAddress, generateWallet } = useMiner();
 
   return (
     <Card>
@@ -21,17 +21,23 @@ export function WalletCard() {
             <CardTitle>Miner Wallet</CardTitle>
           </div>
           <div className="hidden md:block">
-            <Button onClick={() => generateWallet()}>Generate {minerAddress ? 'New' : ''} Wallet</Button>
+            <Button onClick={() => generateWallet()}>
+              Generate {minerAddress ? "New" : ""} Wallet
+            </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <div>
-          <div className="p-4 bg-muted rounded-lg overflow-hidden truncate">{minerAddress}</div>
+          <div className="p-4 bg-muted rounded-lg overflow-hidden truncate">
+            {minerAddress}
+          </div>
         </div>
       </CardContent>
       <CardFooter className="block md:hidden">
-        <Button onClick={() => generateWallet()}>Generate {minerAddress ? 'New' : ''} Wallet</Button>
+        <Button onClick={() => generateWallet()}>
+          Generate {minerAddress ? "New" : ""} Wallet
+        </Button>
       </CardFooter>
     </Card>
   );

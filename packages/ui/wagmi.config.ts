@@ -7,7 +7,7 @@ export default defineConfig({
     foundry({
       project: "../contracts",
       artifacts: "out/",
-      include: ["Blobme.sol/Blobme.json"],
+      include: ["Blobme.sol/Blobme.json", "BlomToken.sol/BlomToken.json"],
     }),
     react(),
   ],
