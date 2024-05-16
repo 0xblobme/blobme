@@ -4,7 +4,7 @@ import { DollarSign } from "lucide-react";
 import { useMemo } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRootStore } from "@/store";
+import { chainIdAtom } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useReadBlobmeBlomToken,
@@ -15,9 +15,10 @@ import {
 } from "@/lib/blobme";
 import { BLOBME_ADDRESS } from "@/env";
 import * as dnum from "dnum";
+import { useAtomValue } from "jotai";
 
 export default function CurrentEpochReward() {
-  const { chainId } = useRootStore(({ chainId }) => ({ chainId }));
+  const chainId = useAtomValue(chainIdAtom);
 
   const { data: blomAddress } = useReadBlobmeBlomToken({
     chainId,
@@ -48,7 +49,11 @@ export default function CurrentEpochReward() {
   const formatted = useMemo(() => {
     if (!epochReward || !decimals) return;
 
-    return dnum.format([epochReward, decimals], { digits: 2, compact: true });
+    const rewardDnum = dnum.from([epochReward, 18]);
+
+    if (dnum.lessThan(rewardDnum, 1)) return "< 1";
+
+    return dnum.format(rewardDnum, { digits: 2, compact: true });
   }, [epochReward, decimals]);
 
   const isLoading = useMemo(

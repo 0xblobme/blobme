@@ -1,14 +1,19 @@
+"use client";
+
 import { useState } from "react";
 import { WatchContractEventOnLogsParameter } from "viem";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BLOBME_ADDRESS } from "@/env";
 import { blobmeAbi, useWatchBlobmeMineEvent } from "@/lib/blobme";
-import { useRootStore } from "@/store";
+import { chainIdAtom } from "@/store";
 import { shortenAddress, shortenTxHash } from "@/utils";
+import { useMiner } from "@/hooks/use-miner";
+import { useAtomValue } from "jotai";
 
 export default function RecentMine() {
-  const { chainId } = useRootStore(({ chainId }) => ({ chainId }));
+  const { minerAddress } = useMiner();
+  const chainId = useAtomValue(chainIdAtom);
 
   const [logs, setLogs] = useState<
     WatchContractEventOnLogsParameter<typeof blobmeAbi, "Mine", true>
@@ -17,6 +22,9 @@ export default function RecentMine() {
   useWatchBlobmeMineEvent({
     chainId,
     address: BLOBME_ADDRESS,
+    args: {
+      miner: minerAddress,
+    },
     onLogs: (logs) => {
       setLogs((oldLogs) => [...logs, ...oldLogs]);
     },

@@ -4,7 +4,7 @@ import { DollarSign } from "lucide-react";
 import { zeroAddress } from "viem";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRootStore } from "@/store";
+import { chainIdAtom } from "@/store";
 import { useMiner } from "@/hooks/use-miner";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -16,9 +16,10 @@ import {
 import { BLOBME_ADDRESS } from "@/env";
 import { useMemo } from "react";
 import * as dnum from "dnum";
+import { useAtomValue } from "jotai";
 
 export default function BLOMBalance() {
-  const { chainId } = useRootStore(({ chainId }) => ({ chainId }));
+  const chainId = useAtomValue(chainIdAtom);
   const { minerAddress = zeroAddress } = useMiner();
 
   const { data: blomAddress } = useReadBlobmeBlomToken({
@@ -26,7 +27,7 @@ export default function BLOMBalance() {
     address: BLOBME_ADDRESS,
   });
 
-  const { data: balance, isLoading: isLoadingBalance } =
+  const { data: balance = 0n, isLoading: isLoadingBalance } =
     useReadBlomTokenBalanceOf({
       address: blomAddress,
       chainId,
@@ -40,9 +41,9 @@ export default function BLOMBalance() {
   });
 
   const formatted = useMemo(() => {
-    if (!balance || !decimals) return;
+    // if (!balance || !decimals) return ;
 
-    return dnum.format([balance, decimals], { digits: 2, compact: true });
+    return dnum.format([balance, decimals ?? 18], { digits: 2, compact: true });
   }, [balance, decimals]);
 
   const isLoading = useMemo(
@@ -59,7 +60,7 @@ export default function BLOMBalance() {
       <CardContent>
         {isLoading && !balance && <Skeleton className="h-8 w-1/2" />}
 
-        {!isLoading && balance && decimals && (
+        {!isLoading && decimals && (
           <div className="text-2xl font-bold">{formatted}</div>
         )}
         <p className="text-xs text-muted-foreground"></p>

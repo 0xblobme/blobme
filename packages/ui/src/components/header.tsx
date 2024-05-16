@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { MainNav } from "./main-nav";
+import { MinerStatus } from "./miner-status";
 
 export function Header() {
   return (
@@ -16,9 +17,10 @@ export function Header() {
           <MainNav />
         </div>
         <div>
-          <Button className="rounded-full" size="lg">
+          <MinerStatus />
+          {/* <Button className="rounded-full" size="lg">
             Get started
-          </Button>
+          </Button> */}
         </div>
       </div>
     </header>

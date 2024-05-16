@@ -1,18 +1,18 @@
 "use client";
 
 import { DollarSign } from "lucide-react";
-import { formatUnits } from "viem";
 import { useBalance } from "wagmi";
 import * as dnum from "dnum";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRootStore } from "@/store";
+import { chainIdAtom } from "@/store";
 import { useMiner } from "@/hooks/use-miner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
+import { useAtomValue } from "jotai";
 
 export default function ETHBalance() {
-  const { chainId } = useRootStore(({ chainId }) => ({ chainId }));
+  const chainId = useAtomValue(chainIdAtom);
   const { minerAddress } = useMiner();
 
   const { data, isLoading } = useBalance({ address: minerAddress, chainId });
@@ -38,7 +38,7 @@ export default function ETHBalance() {
         {!isLoading && data && (
           <div className="text-2xl font-bold">{formatted}</div>
         )}
-        <p className="text-xs text-muted-foreground"></p>
+        <p className="text-xs text-muted-foreground" />
       </CardContent>
     </Card>
   );

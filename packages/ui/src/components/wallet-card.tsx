@@ -29,6 +29,7 @@ export function WalletCard() {
       </CardHeader>
       <CardContent>
         <div>
+          <div>Miner address</div>
           <div className="p-4 bg-muted rounded-lg overflow-hidden truncate">
             {minerAddress}
           </div>

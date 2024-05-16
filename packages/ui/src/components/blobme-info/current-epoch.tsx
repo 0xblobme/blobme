@@ -1,16 +1,21 @@
 import { DollarSign, RefreshCwIcon } from "lucide-react";
 import * as dnum from "dnum";
+import { useAtomValue } from "jotai";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRootStore } from "@/store";
+import { chainIdAtom } from "@/store";
 import { useReadBlobmeEpoch } from "@/lib/blobme";
 import { BLOBME_ADDRESS } from "@/env";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CurrentEpoch() {
-  const { chainId } = useRootStore(({ chainId }) => ({ chainId }));
+  const chainId = useAtomValue(chainIdAtom);
 
-  const { data: currentEpoch, isLoading, isRefetching } = useReadBlobmeEpoch({
+  const {
+    data: currentEpoch,
+    isLoading,
+    isRefetching,
+  } = useReadBlobmeEpoch({
     chainId,
     address: BLOBME_ADDRESS,
   });
