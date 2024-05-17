@@ -1,0 +1,187 @@
+---
+title: Blobme Protocol for Distributing Memecoin on Ethereum EIP-4844 Blobs
+description: The novel memecoin distribution protocol inscribes content on Ethereum EIP-4844 Blobs in a simple, backwards-compatible manner.
+author: 0xReese (@0xreese)
+status: Draft
+created: 2024-05-16
+---
+
+## Abstract
+
+Introduce a novel token distribution protocol for memecoins which inscribes content on Ethereum EIP-4844 Blobs.
+The protocol is intended to be fully compatible with the ERC-20 token standard.
+
+## Motivation
+
+The EIP-4844 protocol, supported by the Ethereum Cancun upgrade, defines blob-carrying transactions.
+Our Blobme protocol allows minting memecoins through sending this kind of blob transactions,
+commemorating the significant upgrades in Ethereum's history, particularly the Cancun upgrade,
+which signifies that Ethereum is on the path to sharding.
+EIP-4844 Blobs provide cheap on-chain data storage for Ethereum Rollups,
+opening up endless possibilities for Ethereum's continuous scaling.
+However, we have observed that Ethereum has recently underperformed in both $ETH price and DApp ecosystem,
+leading to some FUD about Ethereum. While we have some concerns about this,
+we believe that the Ethereum ecosystem, with its indomitable creativity and resilience forged through years of challenges and triumphs,
+will undoubtedly rise to prominence once more.
+We aim to achieve this by launching the first memecoin $BLOM supported by the Blobme protocol,
+with the rallying cry "MAKE ETHEREUM GREAT AGAIN".
+
+## Specification
+
+### Parameters
+
+| Constant | Value |
+| - | - |
+| `MAX_SUPPLY` | `210000000000` |
+| `EPOCH_SECONDS` | `10800` |
+| `HALVING_EPOCHS` | `56` |
+| `INITIAL_EPOCH_REWARD` | `1728000000` |
+
+### Contracts
+
+#### Blobme
+
+The only contract that can mint $BLOM tokens. It is responsible for managing the memecoin distribution mechanism.
+
+*epoch*
+
+Returns the current epoch.
+
+```solidity
+function epoch() public view returns (uint256);
+```
+*nextHalvingEpoch*
+
+Returns the next halving epoch.
+
+```solidity
+function nextHalvingEpoch() public view returns (uint256);
+```
+*epochReward*
+
+Returns the reward of the epoch `epoch`.
+
+```solidity
+function epochReward(uint256 epoch) public view returns (uint256);
+```
+
+*mine*
+
+Mine to earn reward with a valid predefined blob.
+The method will access the versioned hash of the 0-th blob associated with the current transaction
+using `blobhash(0)`. It will check if the hash is within the predefined valid blob hashes.
+
+```solidity
+function mine() external;
+```
+
+*claimReward*
+
+Claim reward for the previous epoch.
+
+```solidity
+function claimReward(address claimer) public;
+```
+
+*setStartEpoch*
+
+Set the start epoch. Only by `Admin`.
+
+```solidity
+function setStartEpoch(uint256 startEpoch_) external onlyOwner;
+```
+
+*setBlobHash*
+
+Add or remove a blob hash of valid message blob. Only by `Admin`.
+
+```solidity
+function setBlobHash(bytes32 hash, bool valid) external onlyOwner;
+```
+
+#### BlomToken
+
+The ERC-20 token contract for $BLOM. It allows us to transfer and trade $BLOM tokens in a standard way.
+As such, we immediately have the ability to list $BLOM on decentralized exchanges like Uniswap.
+
+In addition to [OpenZeppelin's ERC-20 contract](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20),
+we add the following methods.
+
+*mint*
+
+Creates a `value` amount of tokens and assigns them to `account`. Only by the `Blobme` contract.
+
+```solidity
+function mint(address account, uint256 value) external;
+```
+
+### Valid Blob Contents
+
+The blobs carried by transactions, which contain a large amount of data, cannot be accessed by EVM execution,
+but whose commitment (actually its versioned hash) can be accessed. So we predefine a set of hashes
+of valid blob contents through the contract method `setBlobHash`. The predefined valid blob contents should
+consist of interesting texts or messages. In the future, we may consider opening up $BLOM as a governance token
+to vote on the addition or removal of valid blob contents.
+
+## Rationale
+
+### Token economics
+
+We designed a halving mechanism similar to Bitcoin's, but with a significantly shorter halving period,
+to distribute memecoins more akin to Shib and Pepe, delivering them into the hands of those
+who appreciate them in a shorter timeframe, while still adhering to the fundamental principle of fair-launch.
+The halving period will be `7 days`.
+
+The epoch is `3 hours`. The contract will tally the number of `mine` transactions sent during each epoch
+and allow for claiming of $BLOM token rewards in the next epoch.
+The reward amount will be calculated as follows:
+
+```
+<Reward Amount> = <Epoch Reward Quota> * <Number of Your Transactions Sent> / <Total Number of Transactions Sent During This Epoch>
+```
+
+The initial epoch reward quota is set to ensure that the total minted tokens after three months
+reaches over `90%` of the maximum supply available.
+
+The above token distribution mechanism is designed to ensure its fair launch and promote early participation.
+Furthermore, the mechanism of rewarding $BLOM tokens based on the number of mining transactions
+incentivizes active participation in the network.
+The formula for calculating rewards ensures that participants are proportionally rewarded
+based on their contribution to the transaction volume during each epoch.
+
+### Mining throughput
+
+With Ethereum producing a block approximately every 12 seconds and allowing
+a maximum of 6 blobs per block, and considering that Ethereum's blob fee mechanism
+tends to include around 3 blobs per block, we can calculate that the network can
+generate a maximum of 43,200 blobs per day.
+
+Assuming that the initial launch of the $BLOM token is highly active and each block
+contains a transaction to mint $BLOM tokens, then the network can accommodate approximately
+7,200 such minting transactions per day.
+
+## Backwards Compatibility
+
+### Blob availability
+
+Blob contents are not directly accessible by EVM execution but can be access externally from the consensus layer
+(but can be deleted after only a relatively short delay).
+
+### Token standard
+
+The $BLOM token is fully compatible with the ERC-20 token standard.
+
+## Test Cases
+
+Test cases can be found [hear](https://github.com/0xblobme/blobme/tree/main/packages/contracts/test).
+
+## Security Considerations
+
+The `BlomToken` contract has no ownership but has a minter which is the `Blobme` contract.
+The `Blobme` contract only mint $BLOM tokens when the `mine` method is called with a valid blob.
+
+## References
+
+1. [EIP-4844: Shard Blob Transactions](https://www.eip4844.com)
+2. [Ethereum has blobs. Where do we go from here?](https://vitalik.eth.limo/general/2024/03/28/blobs.html)
+3. [Viem Blob Transactions](https://viem.sh/docs/guides/blob-transactions)

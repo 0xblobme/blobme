@@ -35,8 +35,8 @@ contract Blobme is Ownable, Pausable {
 
     uint256 public constant MAX_SUPPLY = 210000000000 * 1e18;
     uint256 public constant EPOCH_SECONDS = 10800; // 3 hours
-    uint256 public constant HALVING_EPOCHS = 240; // halving every month
-    uint256 public constant INITIAL_EPOCH_REWARD = 3456000000 * 1e18;
+    uint256 public constant HALVING_EPOCHS = 56; // halving every month
+    uint256 public constant INITIAL_EPOCH_REWARD = 1728000000 * 1e18;
 
     BlomToken public immutable blomToken;
 
@@ -53,7 +53,7 @@ contract Blobme is Ownable, Pausable {
     }
 
     /**
-     * @dev Returns the current epoch in days.
+     * @dev Returns the current epoch in 3-hours periods.
      */
     function epoch() public view returns (uint256) {
         return block.timestamp / EPOCH_SECONDS;
