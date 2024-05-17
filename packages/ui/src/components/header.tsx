@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { MainNav } from "./main-nav";
@@ -11,7 +12,13 @@ export function Header() {
         <div className="flex items-center md:gap-x-12">
           <div>
             <Link href="/" className="text-3xl font-medium">
-              BLOM
+              <Image
+                src="/logo.png"
+                alt="Blobme Logo"
+                width={120}
+                height={40}
+                className="h-auto"
+              />
             </Link>
           </div>
           <MainNav />

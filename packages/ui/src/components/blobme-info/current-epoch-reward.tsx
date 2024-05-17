@@ -69,9 +69,9 @@ export default function CurrentEpochReward() {
       <CardContent>
         {isLoading && !epochReward && <Skeleton className="h-8 w-1/2" />}
 
-        {!isLoading && epochReward && decimals && (
+        {!isLoading && decimals && (
           <div className="text-2xl font-bold">
-            {formatted} {symbol}
+            {formatted ?? 0} {symbol}
           </div>
         )}
         <p className="text-xs text-muted-foreground"></p>

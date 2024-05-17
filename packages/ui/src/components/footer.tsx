@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 
@@ -9,7 +10,13 @@ export function Footer() {
         <div className="py-16">
           <div className="flex justify-center">
             <Link href="/" className="text-3xl font-medium">
-              BLOM
+              <Image
+                src="/logo.png"
+                alt="Blobme Logo"
+                width={120}
+                height={40}
+                className="h-auto"
+              />
             </Link>
           </div>
           <nav className="mt-10 text-sm flex justify-center gap-x-6">
@@ -49,7 +56,7 @@ export function Footer() {
             </Link>
           </div>
           <p className="mt-6 text-sm text-slate-500 sm:mt-0">
-            Copyright © 2024 BLOM. All rights reserved.
+            Copyright © 2024 Blobme. All rights reserved.
           </p>
         </div>
       </div>

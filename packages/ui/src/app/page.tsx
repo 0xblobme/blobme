@@ -9,7 +9,7 @@ export default function Home() {
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-center">
           Mine{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-            BLOM
+            $BLOM
           </span>{" "}
           on Ethereum
         </h1>
