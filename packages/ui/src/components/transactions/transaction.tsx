@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useAtomValue } from "jotai";
-import type { Hex } from "viem";
+import { decodeEventLog, encodeEventTopics, type Hex } from "viem";
 import { useTransactionReceipt } from "wagmi";
 
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -10,6 +10,7 @@ import { chainIdAtom } from "@/store";
 import { shortenTxHash } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { blobmeAbi } from "@/lib/blobme";
 
 export interface TransactionProps {
   hash: Hex;
@@ -36,13 +37,25 @@ export function Transaction({ hash }: TransactionProps) {
   }, [isLoading, data]);
 
   const blob = useMemo(() => {
-    // TODO
+    const mineTopics = encodeEventTopics({
+      abi: blobmeAbi,
+      eventName: "Mine",
+    });
+
+    const mineLog = data?.logs.find((log) => log.topics[0] === mineTopics[0]);
+
+    if (!mineLog) return "-";
+
+    const decoded = decodeEventLog({
+      abi: blobmeAbi,
+      eventName: "Mine",
+      data: mineLog.data,
+      topics: mineLog.topics,
+    });
+
     if (
-      data?.logs.some(
-        (log) =>
-          log.data ===
-          "0x0132bc8870091caffadb4a0b88508adbab6bbb542ab67001b778e36aef00a811",
-      )
+      decoded.args.blobHash ===
+      "0x0132bc8870091caffadb4a0b88508adbab6bbb542ab67001b778e36aef00a811"
     ) {
       return "helloworld";
     }

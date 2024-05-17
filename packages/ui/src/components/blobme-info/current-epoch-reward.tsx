@@ -2,6 +2,8 @@
 
 import { DollarSign } from "lucide-react";
 import { useMemo } from "react";
+import * as dnum from "dnum";
+import { useAtomValue } from "jotai";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { chainIdAtom } from "@/store";
@@ -14,8 +16,6 @@ import {
   useReadBlomTokenSymbol,
 } from "@/lib/blobme";
 import { BLOBME_ADDRESS } from "@/env";
-import * as dnum from "dnum";
-import { useAtomValue } from "jotai";
 
 export default function CurrentEpochReward() {
   const chainId = useAtomValue(chainIdAtom);
@@ -25,19 +25,16 @@ export default function CurrentEpochReward() {
     address: BLOBME_ADDRESS,
   });
 
-  const { data } = useReadBlobmeEpoch({
+  const { data: currentEpoch = 0n } = useReadBlobmeEpoch({
     chainId,
     address: BLOBME_ADDRESS,
   });
 
-  const { data: epochReward, isLoading: isLoadingBalance } =
+  const { data: epochReward = 0n, isLoading: isLoadingBalance } =
     useReadBlobmeEpochReward({
       address: BLOBME_ADDRESS,
       chainId,
-      args: [data!],
-      query: {
-        enabled: Boolean(data),
-      },
+      args: [currentEpoch],
     });
   const { data: decimals, isLoading: isLoadingDecimals } =
     useReadBlomTokenDecimals({ address: blomAddress, chainId });

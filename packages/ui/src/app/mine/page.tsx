@@ -2,6 +2,7 @@ import { BlobmeInfo } from "@/components/blobme-info";
 import { MinerAction } from "@/components/miner-action";
 import { RecentClaim } from "@/components/recent-claim";
 import { Transactions } from "@/components/transactions";
+import { Suspense } from "react";
 
 export default function MinePage() {
   return (
@@ -21,7 +22,9 @@ export default function MinePage() {
         <div className="container flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
           <div className="grid gap-4 items-start md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
             <Transactions />
-            <RecentClaim />
+            <Suspense fallback={<></>}>
+              <RecentClaim />
+            </Suspense>
           </div>
         </div>
       </section>
