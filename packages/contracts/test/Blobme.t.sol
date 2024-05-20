@@ -128,12 +128,11 @@ contract TestBlobme is Test {
     function testHalvingEpochs() public {
         blobme.setStartEpoch(1);
 
-        assertEq(blobme.epochReward(1), blobme.INITIAL_EPOCH_REWARD());
-
         assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS());
 
         advanceEpochs(blobme.HALVING_EPOCHS());
         assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS());
+        assertEq(blobme.epochReward(1), blobme.INITIAL_EPOCH_REWARD());
 
         advanceEpochs(1);
         assertEq(blobme.nextHalvingEpoch(), 1 + blobme.HALVING_EPOCHS() * 2);

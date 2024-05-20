@@ -35,7 +35,7 @@ contract Blobme is Ownable, Pausable {
 
     uint256 public constant MAX_SUPPLY = 210000000000 * 1e18;
     uint256 public constant EPOCH_SECONDS = 10800; // 3 hours
-    uint256 public constant HALVING_EPOCHS = 56; // halving every month
+    uint256 public constant HALVING_EPOCHS = 56; // halving every week
     uint256 public constant INITIAL_EPOCH_REWARD = 1728000000 * 1e18;
 
     BlomToken public immutable blomToken;
@@ -70,13 +70,16 @@ contract Blobme is Ownable, Pausable {
      * @dev Returns true if the contract is not paused, and the max supply is not reached yet.
      */
     function canMine() public view returns (bool) {
-        return stats.supply + epochReward(epoch()) <= MAX_SUPPLY && !paused();
+        return started() && stats.supply + _epochReward(epoch()) <= MAX_SUPPLY && !paused();
     }
 
     /**
      * @dev Mine a blob with some valid message, to earn reward.
      */
     function mine() external whenNotPaused {
+        // Skip since called in claimReward().
+        // require(started(), "mining not started");
+
         claimReward(_msgSender());
 
         _check();
@@ -103,19 +106,18 @@ contract Blobme is Ownable, Pausable {
 
     function _check() internal {
         uint256 currentEpoch = epoch();
-        require(startEpoch > 0 && currentEpoch >= startEpoch, "mining not started");
 
         // Stats.
         if (stats.epoch < currentEpoch) {
             if (stats.epoch > 0) {
                 stats.blobs += epochStats[stats.epoch];
-                stats.supply += epochReward(stats.epoch);
+                stats.supply += _epochReward(stats.epoch);
             }
             stats.epoch = currentEpoch;
         }
 
         // Ensure that the max supply is not approximately reached yet.
-        require(stats.supply + epochReward(currentEpoch) <= MAX_SUPPLY, "max supply reached");
+        require(stats.supply + _epochReward(currentEpoch) <= MAX_SUPPLY, "max supply reached");
     }
 
     /**
@@ -131,6 +133,11 @@ contract Blobme is Ownable, Pausable {
      * @dev Returns the reward of the epoch.
      */
     function epochReward(uint256 epoch_) public view returns (uint256) {
+        require(started(), "mining not started");
+        return _epochReward(epoch_);
+    }
+
+    function _epochReward(uint256 epoch_) internal view returns (uint256) {
         uint256 cycles = (epoch_ - startEpoch) / HALVING_EPOCHS;
         return INITIAL_EPOCH_REWARD / (2 ** cycles);
     }
@@ -139,6 +146,8 @@ contract Blobme is Ownable, Pausable {
      * @dev Claim reward of previous epoch.
      */
     function claimReward(address claimer) public {
+        require(started(), "mining not started");
+
         claimer = claimer == address(0) ? _msgSender() : claimer;
 
         uint256 currentEpoch = epoch();
@@ -172,6 +181,8 @@ contract Blobme is Ownable, Pausable {
      * @dev Returns the claimable reward of previous epoch.
      */
     function claimableReward(address claimer) public view returns (uint256) {
+        require(started(), "mining not started");
+
         claimer = claimer == address(0) ? _msgSender() : claimer;
 
         uint256 currentEpoch = epoch();
@@ -188,14 +199,14 @@ contract Blobme is Ownable, Pausable {
         // Reward is proportional to the number of blobs you have mined in the epoch.
         uint256 epochBlobs = epochStats[userEpoch];
         assert(epochBlobs > 0);
-        return (epochReward(userEpoch) * userBlobs) / epochBlobs;
+        return (_epochReward(userEpoch) * userBlobs) / epochBlobs;
     }
 
     /**
      * @dev Set the start epoch.
      */
     function setStartEpoch(uint256 startEpoch_) external onlyOwner {
-        require(startEpoch == 0 || startEpoch > epoch(), "mining has started");
+        require(!started(), "mining has started");
         require(startEpoch_ > epoch(), "start epoch can only be set in the future");
         startEpoch = startEpoch_;
     }
@@ -205,6 +216,13 @@ contract Blobme is Ownable, Pausable {
      */
     function setBlobHash(bytes32 hash, bool valid) external onlyOwner {
         blobHashes[hash] = valid;
+    }
+
+    /**
+     * @dev Returns true if mining has started.
+     */
+    function started() public view returns (bool) {
+        return startEpoch > 0 && startEpoch <= epoch();
     }
 
     /**
