@@ -214,8 +214,10 @@ contract Blobme is Ownable, Pausable {
     /**
      * @dev Add or remove a blob hash of valid message blob.
      */
-    function setBlobHash(bytes32 hash, bool valid) external onlyOwner {
-        blobHashes[hash] = valid;
+    function setBlobHashes(bytes32[] calldata hashes, bool valid) external onlyOwner {
+        for (uint256 i = 0; i < hashes.length; i++) {
+            blobHashes[hashes[i]] = valid;
+        }
     }
 
     /**

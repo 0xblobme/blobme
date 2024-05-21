@@ -55,14 +55,14 @@ contract TestBlobme is Test {
         bytes32[] memory blobHashes = new bytes32[](1);
         blobHashes[0] = bytes32(0x0000000000000000000000000000000000000000000000000000000000000001);
 
-        blobme.setBlobHash(blobHashes[0], true);
+        blobme.setBlobHashes(blobHashes, true);
     }
 
     function testMine() public {
         bytes32[] memory blobHashes = new bytes32[](1);
         blobHashes[0] = bytes32(0x0000000000000000000000000000000000000000000000000000000000000001);
 
-        blobme.setBlobHash(blobHashes[0], true);
+        blobme.setBlobHashes(blobHashes, true);
 
         blobme.setStartEpoch(1);
 
