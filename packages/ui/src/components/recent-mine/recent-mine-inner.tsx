@@ -140,7 +140,7 @@ export function RecentMineInner({ initLogs }: RecentMineInnerProps) {
                 <TableRow>
                   <TableHead>Txn Hash</TableHead>
                   <TableHead className="hidden sm:table-cell">Miner</TableHead>
-                  <TableHead className="">Txn Burnt Fee</TableHead>
+                  {/* <TableHead className="">Txn Burnt Fee</TableHead> */}
                   <TableHead className="text-right hidden sm:table-cell">
                     Blob Hash
                   </TableHead>
@@ -229,9 +229,9 @@ export function RecentMineInner({ initLogs }: RecentMineInnerProps) {
                             </div>
                             <div className="hidden text-sm text-muted-foreground md:inline"></div>
                           </TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             <TxGasUsed hash={log.transactionHash} />
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell>
                             <div className="font-medium text-right">
                               {shortenTxHash(log.data)}

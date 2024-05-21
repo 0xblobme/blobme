@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getStatsOverall } from "@/lib/blobscan";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import * as dn from "dnum";
+import { formatEther } from "viem";
 
 export function BlobStats() {
   const { data } = useSuspenseQuery({
@@ -27,9 +28,13 @@ export function BlobStats() {
             <div className="flex items-center justify-between">
               <dt className="text-muted-foreground">AvgMaxBlobGasFee</dt>
               <dd>
-                {dn.format(dn.from(data.transaction.avgMaxBlobGasFee, 9), {
-                  compact: true,
-                })}
+                {Number(
+                  formatEther(
+                    BigInt(Math.ceil(data.transaction.avgMaxBlobGasFee)),
+                    "gwei",
+                  ),
+                ).toFixed(4)}{" "}
+                Gwei
               </dd>
             </div>
           </dl>

@@ -6,7 +6,7 @@ export const wagmiConfig = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [holesky.id]: http(),
+    [holesky.id]: http("https://rpc-holesky.rockx.com"),
     [localhost.id]: http(),
   },
 });
