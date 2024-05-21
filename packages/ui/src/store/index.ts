@@ -1,7 +1,8 @@
 import { atomWithStorage } from "jotai/utils";
 import type { Hex } from "viem";
+import { holesky } from "viem/chains";
 
-export const chainIdAtom = atomWithStorage("blobme.chainId", 1337);
+export const chainIdAtom = atomWithStorage("blobme.chainId", holesky.id);
 
 export const miningAtom = atomWithStorage("blobme.mining", false);
 

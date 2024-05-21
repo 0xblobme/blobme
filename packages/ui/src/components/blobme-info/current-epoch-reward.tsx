@@ -74,7 +74,7 @@ export default function CurrentEpochReward() {
             {formatted ?? 0} {symbol}
           </div>
         )}
-        <p className="text-xs text-muted-foreground"></p>
+        <p className="text-xs text-muted-foreground" />
       </CardContent>
     </Card>
   );

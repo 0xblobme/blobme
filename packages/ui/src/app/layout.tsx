@@ -15,7 +15,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "BLOM",
+  title: "Blobme",
   description: "Memeable $BLOM mined on Ethereum EIP-4844 Blobs",
 };
 

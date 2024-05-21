@@ -5,7 +5,14 @@ import {
   privateKeyToAddress,
 } from "viem/accounts";
 import { loadKZG } from "kzg-wasm";
-import { encodeFunctionData, parseGwei, stringToHex, toBlobs } from "viem";
+import {
+  encodeFunctionData,
+  parseEther,
+  parseGwei,
+  parseUnits,
+  stringToHex,
+  toBlobs,
+} from "viem";
 import {
   useConfig,
   useSendTransaction,
@@ -27,6 +34,7 @@ import {
   privateKeyAtom,
   transactionsAtom,
 } from "@/store";
+import { getStatsTransactions } from "@/lib/blobscan";
 
 export function useMiner() {
   const config = useConfig();
@@ -53,7 +61,7 @@ export function useMiner() {
     error,
     isPending,
   } = useSendTransaction();
-  const { isLoading } = useWaitForTransactionReceipt({
+  const { data, isLoading } = useWaitForTransactionReceipt({
     hash,
     chainId,
   });
@@ -74,13 +82,21 @@ export function useMiner() {
         functionName: "mine",
       });
       const account = privateKeyToAccount(privateKey);
+      const res = await getStatsTransactions();
+
+      let maxFeePerBlobGas = parseGwei("50"); // TODO
+
+      if (res.avgMaxBlobGasFees[0]) {
+        maxFeePerBlobGas = BigInt(Math.ceil(res.avgMaxBlobGasFees[0]));
+      }
+
       sendTransaction({
         chainId,
         account,
         blobs,
         kzg,
         to: BLOBME_ADDRESS,
-        maxFeePerBlobGas: parseGwei("50"),
+        maxFeePerBlobGas,
         data,
       });
     },
