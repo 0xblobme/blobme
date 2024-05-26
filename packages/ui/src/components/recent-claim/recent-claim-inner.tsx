@@ -7,10 +7,10 @@ import { MoveRightIcon } from "lucide-react";
 import { useAtomValue } from "jotai";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BLOBME_ADDRESS } from "@/env";
 import { blobmeAbi, useWatchBlobmeClaimEvent } from "@/lib/blobme";
 import { chainIdAtom } from "@/store";
 import { shortenAddress, shortenTxHash } from "@/utils";
+import { useBlobmeAddress } from "@/hooks/use-blobme-address";
 
 export interface RecentClaimInnerProps {
   initLogs: WatchContractEventOnLogsParameter<typeof blobmeAbi, "Claim", true>;
@@ -18,6 +18,7 @@ export interface RecentClaimInnerProps {
 
 export function RecentClaimInner({ initLogs }: RecentClaimInnerProps) {
   const chainId = useAtomValue(chainIdAtom);
+  const blobmeAddress = useBlobmeAddress();
 
   const [logs, setLogs] = useState<
     WatchContractEventOnLogsParameter<typeof blobmeAbi, "Claim", true>
@@ -25,7 +26,7 @@ export function RecentClaimInner({ initLogs }: RecentClaimInnerProps) {
 
   useWatchBlobmeClaimEvent({
     chainId,
-    address: BLOBME_ADDRESS,
+    address: blobmeAddress,
     onLogs: (logs) => {
       setLogs((oldLogs) => [...logs, ...oldLogs]);
     },

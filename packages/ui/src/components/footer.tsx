@@ -1,42 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
+import Logo from "@/assets/logo.png";
 
 export function Footer() {
   return (
     <footer>
       <div className="container">
-        <div className="py-16">
-          <div className="flex justify-center">
-            <Link href="/" className="text-3xl font-medium">
-              <Image
-                src="/logo.png"
-                alt="Blobme Logo"
-                width={120}
-                height={40}
-                className="h-auto"
-              />
-            </Link>
-          </div>
-          <nav className="mt-10 text-sm flex justify-center gap-x-6">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/">Home</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/mine">Mine</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/wallet">Wallet</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/rpc">RPC</Link>
-            </Button>
-          </nav>
-        </div>
         <div className="flex flex-col items-center border-t border-slate-400/10 py-10 sm:flex-row-reverse sm:justify-between">
           <div className="flex gap-x-6">
-            <Link href="https://twitter.com/" target="_blank" rel="noreferrer">
+            <Link
+              href="https://x.com/ethblobme"
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg
                 className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700"
                 aria-hidden="true"
@@ -45,7 +22,11 @@ export function Footer() {
                 <path d="M13.3174 10.7749L19.1457 4H17.7646L12.7039 9.88256L8.66193 4H4L10.1122 12.8955L4 20H5.38119L10.7254 13.7878L14.994 20H19.656L13.3171 10.7749H13.3174ZM11.4257 12.9738L10.8064 12.0881L5.87886 5.03974H8.00029L11.9769 10.728L12.5962 11.6137L17.7652 19.0075H15.6438L11.4257 12.9742V12.9738Z" />
               </svg>
             </Link>
-            <Link href="https://github.com/" target="_blank" rel="noreferrer">
+            <Link
+              href="https://github.com/0xblobme"
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg
                 className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700"
                 aria-hidden="true"

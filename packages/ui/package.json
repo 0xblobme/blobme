@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "pnpm wagmi generate"
+    "generate": "pnpm wagmi generate",
+    "vercel": "vercel"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.0.1",
@@ -15,10 +16,17 @@
     "@next/mdx": "^14.2.3",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.4",
+    "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-scroll-area": "^1.0.5",
+    "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.36.0",
     "@tanstack/react-query-next-experimental": "^5.36.0",
     "@tanstack/react-virtual": "^3.5.0",
@@ -27,8 +35,10 @@
     "abitype": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk": "0.2.1",
     "contracts": "workspace:*",
     "copy-to-clipboard": "^3.3.3",
+    "date-fns": "^3.6.0",
     "dnum": "^2.12.0",
     "framer-motion": "^11.2.4",
     "jotai": "^2.8.0",
@@ -41,7 +51,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
     "remark-mdx-frontmatter": "^4.0.0",
-    "sonner": "^1.4.41",
+    "sonner": "1.4.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "viem": "^2.10.5",
@@ -57,6 +67,7 @@
     "eslint-config-next": "^14.2.3",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
-    "typescript": "5.4.2"
+    "typescript": "5.4.2",
+    "vercel": "^34.2.3"
   }
 }

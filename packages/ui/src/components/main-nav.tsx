@@ -2,6 +2,7 @@
 
 import { forwardRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import {
@@ -13,40 +14,55 @@ import {
 } from "@/components/ui/navigation-menu";
 
 export function MainNav() {
+  const pathname = usePathname();
+
   return (
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList className="md:gap-x-4">
         <NavigationMenuItem>
           <Link href="/" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle({
+                className:
+                  pathname === "/" && "bg-accent text-accent-foreground",
+              })}
+            >
               Home
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/mine" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle({
+                className:
+                  pathname === "/mine" && "bg-accent text-accent-foreground",
+              })}
+            >
               Mine
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/wallet" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle({
+                className:
+                  pathname === "/wallet" && "bg-accent text-accent-foreground",
+              })}
+            >
               Wallet
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/rpc" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              RPC
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
           <Link href="/spec" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle({
+                className:
+                  pathname === "/spec" && "bg-accent text-accent-foreground",
+              })}
+            >
               Spec
             </NavigationMenuLink>
           </Link>

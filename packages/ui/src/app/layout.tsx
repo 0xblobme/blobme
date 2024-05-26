@@ -3,9 +3,9 @@ import { Inter as FontSans } from "next/font/google";
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Mining } from "@/components/mining";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { PendingTxChecker } from "@/components/pending-tx-checker";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -36,7 +36,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-grow flex flex-col">{children}</main>
           <Footer />
-          <Mining />
+          <PendingTxChecker />
           <Toaster richColors />
         </Providers>
       </body>

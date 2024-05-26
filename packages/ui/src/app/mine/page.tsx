@@ -1,34 +1,29 @@
-import { BlobStats } from "@/components/blob-stats";
+import { BurnerBalance } from "@/components/burner-balance";
 import { BlobmeInfo } from "@/components/blobme-info";
-import { MinerAction } from "@/components/miner-action";
-import { RecentClaim } from "@/components/recent-claim";
 import { RecentMine } from "@/components/recent-mine";
-import { Transactions } from "@/components/transactions";
-import { Suspense } from "react";
+import { BurnerMine } from "@/components/burner-mine";
+import { RecentMiningTransactions } from "@/components/recent-mine-legacy";
 
 export default function MinePage() {
   return (
     <>
-      <section>
-        <div className="container">
-          <div className="flex items-center justify-between space-y-2 md:space-y-0">
-            <h2 className="text-3xl font-bold tracking-tight">Mine</h2>
-            <div className="flex items-center space-x-2">
-              <MinerAction />
-            </div>
-          </div>
-        </div>
-      </section>
       <BlobmeInfo />
       <section>
         <div className="container flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
           <div className="grid gap-4 items-start md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-            <Suspense fallback={<></>}>
-              <RecentMine />
-            </Suspense>
-            <Suspense fallback={<></>}>
-              <BlobStats />
-            </Suspense>
+            <div className="order-2 xl:col-span-2 overflow-x-hidden">
+              <p className="text-xl text-muted-foreground mb-8 mt-10 md:mt-0">
+                The Blobme protocol is designed for distributing memecoins on
+                Ethereum EIP-4844 Blobs. $BLOM is the first memecoin launched
+                with the Blobme protocol. You can mine it now by sending mining
+                transactions with your burner wallet. The mining transactions
+                will carry EIP-4844 Blobs with predefined interesting contents.
+              </p>
+              <BurnerMine />
+              {/* <RecentMine /> */}
+              <RecentMiningTransactions />
+            </div>
+            <BurnerBalance />
           </div>
         </div>
       </section>

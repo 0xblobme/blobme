@@ -1,6 +1,5 @@
 "use client";
 
-import { DollarSign } from "lucide-react";
 import { useMemo } from "react";
 import * as dnum from "dnum";
 import { useAtomValue } from "jotai";
@@ -15,26 +14,30 @@ import {
   useReadBlomTokenDecimals,
   useReadBlomTokenSymbol,
 } from "@/lib/blobme";
-import { BLOBME_ADDRESS } from "@/env";
+import { useBlobmeAddress } from "@/hooks/use-blobme-address";
 
 export default function CurrentEpochReward() {
   const chainId = useAtomValue(chainIdAtom);
+  const blobmeAddress = useBlobmeAddress();
 
-  const { data: blomAddress } = useReadBlobmeBlomToken({
-    chainId,
-    address: BLOBME_ADDRESS,
-  });
+  const { data: blomAddress, isLoading: isLoadingBlomAddress } =
+    useReadBlobmeBlomToken({
+      chainId,
+      address: blobmeAddress,
+    });
 
-  const { data: currentEpoch = 0n } = useReadBlobmeEpoch({
-    chainId,
-    address: BLOBME_ADDRESS,
-  });
+  const { data: currentEpoch = 0n, isLoading: isLoadingCurrentEpoch } =
+    useReadBlobmeEpoch({
+      chainId,
+      address: blobmeAddress,
+    });
 
   const { data: epochReward = 0n, isLoading: isLoadingBalance } =
     useReadBlobmeEpochReward({
-      address: BLOBME_ADDRESS,
+      address: blobmeAddress,
       chainId,
       args: [currentEpoch],
+      query: { enabled: Boolean(currentEpoch) },
     });
   const { data: decimals, isLoading: isLoadingDecimals } =
     useReadBlomTokenDecimals({ address: blomAddress, chainId });
@@ -54,8 +57,19 @@ export default function CurrentEpochReward() {
   }, [epochReward, decimals]);
 
   const isLoading = useMemo(
-    () => isLoadingBalance && isLoadingDecimals && isLoadingSymbol,
-    [isLoadingBalance, isLoadingDecimals, isLoadingSymbol],
+    () =>
+      isLoadingBlomAddress ||
+      isLoadingCurrentEpoch ||
+      isLoadingBalance ||
+      isLoadingDecimals ||
+      isLoadingSymbol,
+    [
+      isLoadingBalance,
+      isLoadingBlomAddress,
+      isLoadingCurrentEpoch,
+      isLoadingDecimals,
+      isLoadingSymbol,
+    ],
   );
 
   return (
@@ -64,14 +78,13 @@ export default function CurrentEpochReward() {
         <CardTitle className="text-sm font-medium">
           Current Epoch Reward
         </CardTitle>
-        <DollarSign className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        {isLoading && !epochReward && <Skeleton className="h-8 w-1/2" />}
+        {isLoading && <Skeleton className="h-8 w-1/2" />}
 
-        {!isLoading && decimals && (
+        {!isLoading && (
           <div className="text-2xl font-bold">
-            {formatted ?? 0} {symbol}
+            {formatted ? `${formatted} ${symbol}` : `0 ${symbol}`}
           </div>
         )}
         <p className="text-xs text-muted-foreground" />

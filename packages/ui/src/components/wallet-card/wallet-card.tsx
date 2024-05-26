@@ -64,7 +64,7 @@ export function WalletCard() {
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="space-y-2">
-          <div>Miner address</div>
+          <div>Address</div>
           <div className="group flex items-center p-4 bg-muted rounded-lg overflow-hidden">
             <span className="truncate">{minerAddress}</span>
             <Button

@@ -1,50 +1,56 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useMemo } from "react";
 import {
   generatePrivateKey,
   privateKeyToAccount,
   privateKeyToAddress,
 } from "viem/accounts";
 import { loadKZG } from "kzg-wasm";
-import { encodeFunctionData, stringToHex, toBlobs } from "viem";
 import {
-  useConfig,
-  useSendTransaction,
-  useWaitForTransactionReceipt,
-} from "wagmi";
-import {
+  CallExecutionErrorType,
   SendTransactionErrorType,
-  getClient,
-  sendTransaction as sendTransactionWagmi,
-  waitForTransactionReceipt,
-} from "@wagmi/core";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { getBlobBaseFee } from "viem/actions";
-
-import { BLOBME_ADDRESS } from "@/env";
-import { blobmeAbi } from "@/lib/blobme";
+  TransactionExecutionErrorType,
+  WaitForTransactionReceiptErrorType,
+  encodeFunctionData,
+  stringToHex,
+  toBlobs,
+} from "viem";
+import { getClient } from "@wagmi/core";
 import {
-  chainIdAtom,
-  miningAtom,
-  pendingTransactionAtom,
-  privateKeyAtom,
-  transactionsAtom,
-} from "@/store";
-import { getStatsTransactions } from "@/lib/blobscan";
-import { toast } from "sonner";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { holesky } from "viem/chains";
+  getBlobBaseFee,
+  getTransactionCount,
+  sendTransaction,
+  waitForTransactionReceipt,
+} from "viem/actions";
 import { ExternalLinkIcon } from "lucide-react";
+import { toast } from "sonner";
+
+import { blobmeAbi } from "@/lib/blobme";
+import { Button } from "@/components/ui/button";
+import { shortenTxHash } from "@/utils";
+import { BLOBS } from "@/config";
+import { wagmiConfig, wagmiConfigForGetBlobBaseFee } from "@/lib/wagmi";
+import {
+  MiningStatus,
+  cachedPendingTxHashAtom,
+  chainIdAtom,
+  isSendingTxAtom,
+  miningAtom,
+  miningStatusAtom,
+  pendingTxHashAtom,
+  privateKeyAtom,
+} from "@/store";
+import { useBlobmeAddress } from "./use-blobme-address";
 
 export function useMiner() {
-  const config = useConfig();
-
   const chainId = useAtomValue(chainIdAtom);
+  const blobmeAddress = useBlobmeAddress();
+  const [mining, setMining] = useAtom(miningAtom);
   const [privateKey, setPrivateKey] = useAtom(privateKeyAtom);
-
-  const setMining = useSetAtom(miningAtom);
-  const setTransactions = useSetAtom(transactionsAtom);
-  const setPendingTx = useSetAtom(pendingTransactionAtom);
+  const setPendingTxHash = useSetAtom(pendingTxHashAtom);
+  const setCachedPendingTxHash = useSetAtom(cachedPendingTxHashAtom);
+  const setIsSendingTx = useSetAtom(isSendingTxAtom);
+  const setMiningStatus = useSetAtom(miningStatusAtom);
 
   const generateWallet = useCallback(() => {
     setPrivateKey(generatePrivateKey());
@@ -55,180 +61,174 @@ export function useMiner() {
     [privateKey],
   );
 
-  const {
-    sendTransaction,
-    data: hash,
-    error,
-    isPending,
-  } = useSendTransaction();
-  const { data, isLoading } = useWaitForTransactionReceipt({
-    hash,
-    chainId,
-  });
-
-  useEffect(() => {
-    console.log(error); // TODO
-
-    if (!error) return;
-
-    let description: string;
-    let title: string = "Transaction failed";
-    // @ts-ignore
-    switch (error.cause.name) {
-      case "UserRejectedRequestError":
-        // @ts-ignore
-        description = error.cause.details;
-        break;
-      case "ExecutionRevertedError":
-        // @ts-ignore
-        description = error.cause.message;
-        break;
-      case "EstimateGasExecutionError":
-        // @ts-ignore
-        description = error.cause.details;
-      case "InsufficientFundsError":
-        title = "Insufficient balance";
-      default:
-        description = "";
-    }
-    toast.error(title, { description });
-  }, [error]);
-
-  useEffect(() => {
-    if (data && data.status === "success") {
-      toast.success("Transaction successful", {
-        description: (
-          <div>
-            View on explorer{" "}
-            <a
-              className={cn(buttonVariants({ variant: "link", size: "sm" }))}
-              rel="noreferrer"
-              target="_blank"
-              href={`${holesky.blockExplorers.default.url}/tx/${data.transactionHash}`}
-            >
-              {data.transactionHash}
-              <ExternalLinkIcon className="w-4 h-4 ml-1" />
-            </a>
-          </div>
-        ),
-      });
-    }
-    if (data && data.status === "reverted") {
-      toast.error("Transaction failed", {
-        description: "Transaction reverted",
-      });
-    }
-  }, [data]);
+  const account = useMemo(
+    () => privateKey && privateKeyToAccount(privateKey),
+    [privateKey],
+  );
 
   const mine = useCallback(
-    async (content: string = "helloworld") => {
-      if (!privateKey) return;
+    async (autoMode: boolean = false) => {
+      if (!privateKey || !minerAddress) return;
+
+      setMining(true);
+      let mining = true;
 
       const kzg = await loadKZG();
 
-      const blobs = toBlobs({ data: stringToHex(content) });
       const data = encodeFunctionData({
         abi: blobmeAbi,
         functionName: "mine",
       });
-      const account = privateKeyToAccount(privateKey);
 
-      const client = getClient(config, { chainId });
-
-      if (!client) return; // TODO
-
-      const blobBaseFee = await getBlobBaseFee(client);
-
-      console.log(blobBaseFee);
-
-      sendTransaction({
+      const getBlobBaseFeeClient = getClient(wagmiConfigForGetBlobBaseFee, {
         chainId,
-        account,
-        blobs,
-        kzg,
-        to: BLOBME_ADDRESS,
-        maxFeePerBlobGas: blobBaseFee + blobBaseFee / 10n,
-        data,
       });
-    },
-    [chainId, privateKey, sendTransaction, config],
-  );
+      if (!getBlobBaseFeeClient)
+        throw new Error("GetBlobBaseFeeClient not found");
 
-  const autoMine = useCallback(
-    async (content: string = "helloworld") => {
-      if (!privateKey) return;
+      const client = getClient(wagmiConfig, { chainId });
+      if (!client) throw new Error("Client not found");
 
-      const kzg = await loadKZG();
-
-      const blobs = toBlobs({ data: stringToHex(content) });
-      const data = encodeFunctionData({
-        abi: blobmeAbi,
-        functionName: "mine",
-      });
       const account = privateKeyToAccount(privateKey);
 
-      const client = getClient(config, { chainId });
-
-      if (!client) return; // TODO
-
-      const blobBaseFee = await getBlobBaseFee(client);
-
-      try {
-        const hash = await sendTransactionWagmi(config, {
-          chainId,
-          account,
-          blobs,
-          kzg,
-          to: BLOBME_ADDRESS,
-          maxFeePerBlobGas: blobBaseFee + blobBaseFee / 10n,
-          data,
-        });
-
-        setPendingTx(hash);
-        setTransactions((prev) => [hash, ...prev]);
-
-        await waitForTransactionReceipt(config, { hash, chainId });
-
-        const mining = localStorage.getItem("blobme.mining") === "true";
-        if (mining) {
-          return autoMine();
-        }
-      } catch (error) {
-        console.log(error);
-
-        const patterns = [
-          /^Nonce\sprovided\sfor\sthe\stransaction\sis\slower\sthan\sthe\scurrent\snonce\sof\sthe\saccount\./,
-          /^Nonce\sprovided\sfor\sthe\stransaction\s\(\d+\)\sis\shigher\sthan\sthe\snext\sone\sexpected\./,
-          /^Execution\sreverted\swith\sreason\:\srevert\:\salready\smined\sin\sthis\sblock\./,
-        ];
-
+      do {
+        let blobContent = JSON.parse(
+          localStorage.getItem("blobme.blobContent") ?? "null",
+        );
         if (
-          (error as SendTransactionErrorType).message &&
-          patterns.some((p) =>
-            p.test((error as SendTransactionErrorType).message),
-          )
+          !blobContent ||
+          blobContent === '""' ||
+          blobContent === "null" ||
+          blobContent === "undefined"
         ) {
-          const mining = localStorage.getItem("blobme.mining") === "true";
-          if (mining) {
-            return autoMine();
-          }
+          const index = Math.floor(Math.random() * BLOBS.length);
+          blobContent = BLOBS[index].content;
         }
 
-        toast.error("Mining stopped", {
-          description: "Send mine transaction failed.",
-        });
+        const blobs = toBlobs({ data: stringToHex(blobContent) });
+        const blobBaseFee = await getBlobBaseFee(getBlobBaseFeeClient);
+        const maxFeePerBlobGas = blobBaseFee + blobBaseFee / 2n; // blobBaseFee * 1.5
 
-        setMining(false);
-      }
+        mining = localStorage.getItem("blobme.mining") === "true";
+
+        if (!mining) break;
+
+        try {
+          setIsSendingTx(true);
+          setMiningStatus(MiningStatus.Sending);
+
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          const nonce = await getTransactionCount(getBlobBaseFeeClient, {
+            address: minerAddress,
+          });
+
+          const hash = await sendTransaction(getBlobBaseFeeClient, {
+            chainId,
+            account,
+            blobs,
+            kzg,
+            to: blobmeAddress,
+            maxFeePerBlobGas,
+            data,
+            nonce,
+          });
+
+          setMiningStatus(MiningStatus.Waiting);
+          setIsSendingTx(false);
+          setPendingTxHash(hash);
+          setCachedPendingTxHash(hash);
+
+          const { transactionHash } = await waitForTransactionReceipt(
+            getBlobBaseFeeClient,
+            { hash },
+          );
+
+          setMiningStatus(MiningStatus.Success);
+
+          toast.success("Send mining transaction successful", {
+            description: (
+              <div>
+                View on explorer{" "}
+                <Button className="h-auto p-0" variant="link" asChild>
+                  <a
+                    href={`${client.chain.blockExplorers?.default.url}/tx/${transactionHash}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {shortenTxHash(transactionHash)}
+                    <ExternalLinkIcon className="w-4 h-4 ml-1" />
+                  </a>
+                </Button>
+              </div>
+            ),
+          });
+
+          await new Promise((r) => setTimeout(r, 500));
+
+          setMiningStatus(MiningStatus.Idle);
+          setCachedPendingTxHash(undefined);
+          setPendingTxHash(undefined);
+
+          await new Promise((r) => setTimeout(r, 1000));
+        } catch (e) {
+          console.log(e);
+
+          mining = localStorage.getItem("blobme.mining") === "true";
+
+          const error = e as
+            | WaitForTransactionReceiptErrorType
+            | TransactionExecutionErrorType
+            | SendTransactionErrorType
+            | CallExecutionErrorType;
+
+          if (error.name === "TransactionExecutionError") {
+            if (
+              mining &&
+              (error.cause.name === "NonceTooLowError" ||
+                error.cause.name === "NonceTooHighError")
+            ) {
+              continue;
+            }
+
+            if (error.cause.name === "InsufficientFundsError") {
+              // toast.error("Insufficient balance");
+            }
+          } else if (error.name === "CallExecutionError") {
+            if (
+              mining &&
+              (error.cause.name === "NonceTooLowError" ||
+                error.cause.name === "NonceTooHighError")
+            ) {
+              continue;
+            }
+          } else if (error.name === "TimeoutError") {
+            continue;
+          }
+
+          toast.error("Send mining transaction failed", {
+            description: error.message,
+          });
+
+          break;
+        }
+      } while (mining && autoMode);
+
+      setIsSendingTx(false);
+      setMining(false);
     },
-    [chainId, privateKey, config, setMining, setTransactions, setPendingTx],
+    [
+      privateKey,
+      minerAddress,
+      setMining,
+      chainId,
+      setIsSendingTx,
+      setMiningStatus,
+      blobmeAddress,
+      setPendingTxHash,
+      setCachedPendingTxHash,
+    ],
   );
 
-  return {
-    minerAddress,
-    generateWallet,
-    mine,
-    isMining: isPending || isLoading,
-    autoMine,
-  };
+  return { generateWallet, minerAddress, account, mine };
 }

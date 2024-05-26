@@ -9,7 +9,7 @@ import { RecentClaimInner } from "./recent-claim-inner";
 export async function RecentClaim() {
   const client = getClient(wagmiConfig, { chainId: 1337 }); // TODO
 
-  const logs = await getLogs(client, {
+  const logs = await getLogs(client!, {
     address: BLOBME_ADDRESS,
     event: parseAbiItem(
       "event Claim(address indexed miner, address indexed to, uint256 value)",

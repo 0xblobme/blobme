@@ -32,7 +32,7 @@ export function GenerateWalletAlert() {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>Generate new wallet</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete your
             current miner private key from browser.
@@ -41,7 +41,7 @@ export function GenerateWalletAlert() {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleGenerateWallet}>
-            Continue
+            Generate
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
