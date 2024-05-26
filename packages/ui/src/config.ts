@@ -20,7 +20,7 @@ export const SUPPORTED_CHAIN_IDS = [holesky.id, localhost.id];
 export type SUPPORTED_CHAIN_ID = (typeof SUPPORTED_CHAIN_IDS)[number];
 
 export const BLOBME_ADDRESSES: Record<SUPPORTED_CHAIN_ID, Address> = {
-  [holesky.id]: "0x3059eb048D404B4FCCCc3cC34754Ad9287a17C0c",
+  [holesky.id]: "0xdcb759134dc3ca0e39953e5b67d172c4fd6905c8",
   [localhost.id]: "0x320ae55a5826c87165a8cf9c08621fDd48DdeCa8",
 };
 

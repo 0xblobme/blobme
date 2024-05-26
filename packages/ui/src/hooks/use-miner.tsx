@@ -214,6 +214,7 @@ export function useMiner() {
         }
       } while (mining && autoMode);
 
+      setMiningStatus(MiningStatus.Idle);
       setIsSendingTx(false);
       setMining(false);
     },
