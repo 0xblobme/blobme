@@ -58,3 +58,5 @@ export enum MiningStatus {
 export enum MiningStatus1 {}
 
 export const miningStatusAtom = atom<MiningStatus>(MiningStatus.Idle);
+
+export const newLogsAtom = atom<any[]>([]);

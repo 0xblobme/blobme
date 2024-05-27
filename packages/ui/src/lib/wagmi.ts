@@ -1,4 +1,4 @@
-import { http, createConfig } from "wagmi";
+import { http, createConfig, webSocket } from "wagmi";
 import { mainnet, sepolia, holesky, localhost } from "wagmi/chains";
 
 import { ALCHEMY_API_KEY } from "@/env";
@@ -11,6 +11,14 @@ export const wagmiConfig = createConfig({
       `https://eth-holesky.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
     ),
     [localhost.id]: http(),
+  },
+});
+
+export const wagmiWebsocketConfig = createConfig({
+  chains: SUPPORTED_CHAINS,
+  transports: {
+    [holesky.id]: webSocket("wss://holesky.drpc.org"),
+    [localhost.id]: webSocket("ws://localhost:8545"),
   },
 });
 

@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai";
-import { useMemo, useState } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import { useMemo } from "react";
 import { decodeEventLog, isAddressEqual, zeroAddress } from "viem";
 
 import { queryLogsLegacy } from "@/lib/blockscout";
-import { chainIdAtom } from "@/store";
+import { chainIdAtom, newLogsAtom } from "@/store";
 import { useBlobmeAddress } from "@/hooks/use-blobme-address";
 import { useMiner } from "@/hooks/use-miner";
 import { BLOBS, SUPPORTED_CHAINS } from "@/config";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { shortenAddress, shortenTxHash } from "@/utils";
 import { blobmeAbi, useWatchBlobmeMineEvent } from "@/lib/blobme";
 import { Skeleton } from "@/components/ui/skeleton";
+import { wagmiWebsocketConfig } from "@/lib/wagmi";
 
 export function RecentMiningTransactions() {
   const chainId = useAtomValue(chainIdAtom);
@@ -25,9 +26,10 @@ export function RecentMiningTransactions() {
     [chainId],
   );
 
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useAtom(newLogsAtom);
 
   useWatchBlobmeMineEvent({
+    config: wagmiWebsocketConfig,
     chainId,
     address: blobmeAddress,
     onLogs: (logs) => {
