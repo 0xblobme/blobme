@@ -5,6 +5,7 @@ import { useAtomValue } from "jotai";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useCallback, useEffect, useState } from "react";
 import { Address, isAddressEqual, zeroAddress } from "viem";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,18 +23,51 @@ import { useMiner } from "@/hooks/use-miner";
 import { useReadBlobmeUsers, useWriteBlobmeSetRecipient } from "@/lib/blobme";
 import { chainIdAtom } from "@/store";
 import { useBlobmeAddress } from "@/hooks/use-blobme-address";
-import { toast } from "sonner";
 
 export interface EditRecipientProps {
   onClose?: (success?: boolean) => void;
 }
 
 export function EditRecipient({ onClose }: EditRecipientProps) {
+  const [open, setOpen] = useState(false);
+
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      setOpen(open);
+
+      if (!open) {
+        onClose?.();
+      }
+    },
+    [onClose],
+  );
+
+  const handleSuccess = useCallback(() => {
+    setOpen(false);
+    onClose?.(true);
+  }, [onClose]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        <Button className="ml-2" size="sm">
+          Change
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Change recipient</DialogTitle>
+        </DialogHeader>
+        <EditRecipientInner onSuccess={handleSuccess} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditRecipientInner({ onSuccess }: { onSuccess?: () => void }) {
   const chainId = useAtomValue(chainIdAtom);
   const blobmeAddress = useBlobmeAddress();
   const { minerAddress, account } = useMiner();
-
-  const [open, setOpen] = useState(false);
 
   const [recipient, setRecipient] = useState<Address>();
 
@@ -83,61 +117,38 @@ export function EditRecipient({ onClose }: EditRecipientProps) {
     if (!receipt) return;
 
     if (receipt.status === "success") {
-      setOpen(false);
-      onClose?.(true);
+      onSuccess?.();
       toast.success("Change recipient successfully");
     } else if (receipt.status === "reverted") {
       toast.error("Change recipient failed", {
         description: "Transaction reverted.",
       });
     }
-  }, [receipt, onClose]);
-
-  const onOpenChange = useCallback(
-    (open: boolean) => {
-      setOpen(open);
-
-      if (!open) {
-        onClose?.();
-        setRecipient(undefined);
-      }
-    },
-    [onClose],
-  );
+  }, [onSuccess, receipt]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="ml-2" size="sm">
-          Change
+    <>
+      <div className="">
+        <Input
+          id="name"
+          value={recipient}
+          onChange={(e) => setRecipient(e.target.value as Address)}
+        />
+      </div>
+      <DialogFooter>
+        <Button
+          type="button"
+          onClick={handleSetRecipient}
+          disabled={
+            isPending || isLoading || !recipient || recipient === user?.[0]
+          }
+        >
+          {(isPending || isLoading) && (
+            <Loader2Icon className="mr-1 h-4 w-4 animate-spin flex-none" />
+          )}
+          {isPending || isLoading ? "Changing" : "Change"}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Change recipient</DialogTitle>
-        </DialogHeader>
-        <div className="">
-          <Input
-            id="name"
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value as Address)}
-          />
-        </div>
-        <DialogFooter>
-          <Button
-            type="button"
-            onClick={handleSetRecipient}
-            disabled={
-              isPending || isLoading || !recipient || recipient === user?.[0]
-            }
-          >
-            {(isPending || isLoading) && (
-              <Loader2Icon className="mr-1 h-4 w-4 animate-spin flex-none" />
-            )}
-            {isPending || isLoading ? "Changing" : "Change"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </DialogFooter>
+    </>
   );
 }

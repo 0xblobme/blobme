@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   AlertDialog,
@@ -16,13 +16,17 @@ import { privateKeyAtom } from "@/store";
 
 export function CheckBurner() {
   const privateKey = useAtomValue(privateKeyAtom);
+  const [open, setOpen] = useState(false);
   const { generateWallet } = useMiner();
-  const [open, setOpen] = useState(!privateKey);
 
   const handleGoToGenerateWallet = () => {
     generateWallet();
     setOpen(false);
   };
+
+  useEffect(() => {
+    setOpen(!privateKey);
+  }, [privateKey]);
 
   return (
     <AlertDialog open={open}>
