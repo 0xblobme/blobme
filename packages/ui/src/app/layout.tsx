@@ -37,7 +37,7 @@ export default function RootLayout({
           <main className="flex-grow flex flex-col">{children}</main>
           <Footer />
           <PendingTxChecker />
-          <Toaster richColors />
+          <Toaster richColors closeButton />
         </Providers>
       </body>
     </html>

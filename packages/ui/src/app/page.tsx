@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className=" relative space-y-8 container flex-grow flex flex-col justify-center">
+    <div className=" relative space-y-12 container flex-grow flex flex-col justify-center">
       <div className="text-center">
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-center">
           Mine{" "}
@@ -16,7 +16,11 @@ export default function Home() {
         <p className="text-center text-lg"></p>
       </div>
       <div className="flex justify-center">
-        <Button asChild className="rounded-full" size="lg">
+        <Button
+          asChild
+          className="h-12 min-w-40 rounded-full text-foreground text-lg"
+          size="lg"
+        >
           <Link href="/mine">MINE</Link>
         </Button>
       </div>

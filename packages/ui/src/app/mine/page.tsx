@@ -3,6 +3,7 @@ import { BlobmeInfo } from "@/components/blobme-info";
 import { RecentMine } from "@/components/recent-mine";
 import { BurnerMine } from "@/components/burner-mine";
 import { RecentMiningTransactions } from "@/components/recent-mine-legacy";
+import { CheckBurner } from "@/components/check-burner";
 
 export default function MinePage() {
   return (
@@ -27,6 +28,7 @@ export default function MinePage() {
           </div>
         </div>
       </section>
+      <CheckBurner />
     </>
   );
 }
