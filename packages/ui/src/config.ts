@@ -1,12 +1,8 @@
-import { Address, Chain } from "viem";
+import { Address, Chain, Hex } from "viem";
 import { holesky, localhost } from "viem/chains";
+import blobs from "./blobs.json";
 
-export const BLOBS = [
-  {
-    content: "helloworld",
-    hash: "0x0132bc8870091caffadb4a0b88508adbab6bbb542ab67001b778e36aef00a811",
-  },
-];
+export const BLOBS: { content: string; hash: Hex }[] = blobs as any;
 
 export const SUPPORTED_CHAINS: readonly [Chain, ...Chain[]] = [
   holesky,
