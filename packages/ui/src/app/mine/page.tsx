@@ -1,4 +1,4 @@
-import { BurnerBalance } from "@/components/burner-balance";
+import { BurnerInfo } from "@/components/burner-info";
 import { BlobmeInfo } from "@/components/blobme-info";
 import { RecentMine } from "@/components/recent-mine";
 import { BurnerMine } from "@/components/burner-mine";
@@ -23,7 +23,7 @@ export default function MinePage() {
               {/* <RecentMine /> */}
               <RecentMiningTransactions />
             </div>
-            <BurnerBalance />
+            <BurnerInfo />
           </div>
         </div>
       </section>

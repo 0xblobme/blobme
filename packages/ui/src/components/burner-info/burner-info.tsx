@@ -18,7 +18,7 @@ import { ClaimableReward } from "./claimable-reward";
 import { TxsCurrentEpoch } from "./txs-current-epoch";
 import { RewardCurrentEpoch } from "./reward-current-epoch";
 
-export function BurnerBalance() {
+export function BurnerInfo() {
   const { minerAddress } = useMiner();
   const handleCopyMinerAddress = useCallback(() => {
     if (!minerAddress) return;
