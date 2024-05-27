@@ -11,6 +11,7 @@ import {
   SendTransactionErrorType,
   TransactionExecutionErrorType,
   WaitForTransactionReceiptErrorType,
+  WaitForTransactionReceiptTimeoutErrorType,
   encodeFunctionData,
   stringToHex,
   toBlobs,
@@ -90,6 +91,8 @@ export function useMiner() {
       if (!client) throw new Error("Client not found");
 
       const account = privateKeyToAccount(privateKey);
+
+      let error;
 
       do {
         let blobContent = JSON.parse(
@@ -176,7 +179,8 @@ export function useMiner() {
 
           mining = localStorage.getItem("blobme.mining") === "true";
 
-          const error = e as
+          error = e as
+            | WaitForTransactionReceiptTimeoutErrorType
             | WaitForTransactionReceiptErrorType
             | TransactionExecutionErrorType
             | SendTransactionErrorType
@@ -202,17 +206,31 @@ export function useMiner() {
             ) {
               continue;
             }
-          } else if (error.name === "TimeoutError") {
+
+            if (
+              mining &&
+              error.cause.details ===
+                "execution reverted: already mined in this block"
+            ) {
+              continue;
+            }
+          } else if (error.name === "WaitForTransactionReceiptTimeoutError") {
             continue;
           }
-
-          toast.error("Send mining transaction failed", {
-            description: error.message,
-          });
 
           break;
         }
       } while (mining && autoMode);
+
+      if (error) {
+        toast.error("Send mining transaction failed", {
+          description:
+            (error?.cause as any)?.details ||
+            (error?.cause as any)?.message ||
+            (error as any)?.details ||
+            (error as any)?.message,
+        });
+      }
 
       setMiningStatus(MiningStatus.Idle);
       setIsSendingTx(false);

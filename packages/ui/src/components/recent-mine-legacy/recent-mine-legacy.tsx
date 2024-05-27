@@ -13,7 +13,7 @@ import { BLOBS, SUPPORTED_CHAINS } from "@/config";
 import { Button } from "@/components/ui/button";
 import { shortenAddress, shortenTxHash } from "@/utils";
 import { blobmeAbi, useWatchBlobmeMineEvent } from "@/lib/blobme";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function RecentMiningTransactions() {
   const chainId = useAtomValue(chainIdAtom);

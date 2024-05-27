@@ -147,10 +147,10 @@ export const blobmeAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "hash", internalType: "bytes32", type: "bytes32" },
+      { name: "hashes", internalType: "bytes32[]", type: "bytes32[]" },
       { name: "valid", internalType: "bool", type: "bool" },
     ],
-    name: "setBlobHash",
+    name: "setBlobHashes",
     outputs: [],
   },
   {
@@ -173,6 +173,13 @@ export const blobmeAbi = [
     inputs: [],
     name: "startEpoch",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "started",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
     stateMutability: "view",
@@ -714,6 +721,14 @@ export const useReadBlobmeStartEpoch = /*#__PURE__*/ createUseReadContract({
 });
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"started"`
+ */
+export const useReadBlobmeStarted = /*#__PURE__*/ createUseReadContract({
+  abi: blobmeAbi,
+  functionName: "started",
+});
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"stats"`
  */
 export const useReadBlobmeStats = /*#__PURE__*/ createUseReadContract({
@@ -770,12 +785,14 @@ export const useWriteBlobmeRenounceOwnership =
   });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"setBlobHash"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"setBlobHashes"`
  */
-export const useWriteBlobmeSetBlobHash = /*#__PURE__*/ createUseWriteContract({
-  abi: blobmeAbi,
-  functionName: "setBlobHash",
-});
+export const useWriteBlobmeSetBlobHashes = /*#__PURE__*/ createUseWriteContract(
+  {
+    abi: blobmeAbi,
+    functionName: "setBlobHashes",
+  },
+);
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"setRecipient"`
@@ -854,12 +871,12 @@ export const useSimulateBlobmeRenounceOwnership =
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"setBlobHash"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link blobmeAbi}__ and `functionName` set to `"setBlobHashes"`
  */
-export const useSimulateBlobmeSetBlobHash =
+export const useSimulateBlobmeSetBlobHashes =
   /*#__PURE__*/ createUseSimulateContract({
     abi: blobmeAbi,
-    functionName: "setBlobHash",
+    functionName: "setBlobHashes",
   });
 
 /**
