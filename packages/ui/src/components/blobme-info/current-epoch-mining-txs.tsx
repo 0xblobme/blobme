@@ -47,7 +47,7 @@ export function CurrentEpochMiningTxs() {
         {isLoading && <Skeleton className="h-8 w-1/2" />}
         {!isLoading && (
           <div className="text-2xl font-bold flex items-center gap-2">
-            {dn.format(dn.from(epochBlobs))}
+            {dn.format(dn.from(epochBlobs), { locale: "en" })}
           </div>
         )}
         <p className="text-xs text-muted-foreground"></p>

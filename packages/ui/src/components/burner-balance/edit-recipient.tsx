@@ -4,7 +4,7 @@ import { Loader2Icon, SquarePenIcon } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useCallback, useEffect, useState } from "react";
-import { Address } from "viem";
+import { Address, isAddressEqual, zeroAddress } from "viem";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,10 +24,16 @@ import { chainIdAtom } from "@/store";
 import { useBlobmeAddress } from "@/hooks/use-blobme-address";
 import { toast } from "sonner";
 
-export function EditRecipient() {
+export interface EditRecipientProps {
+  onClose?: (success?: boolean) => void;
+}
+
+export function EditRecipient({ onClose }: EditRecipientProps) {
   const chainId = useAtomValue(chainIdAtom);
   const blobmeAddress = useBlobmeAddress();
   const { minerAddress, account } = useMiner();
+
+  const [open, setOpen] = useState(false);
 
   const [recipient, setRecipient] = useState<Address>();
 
@@ -39,7 +45,7 @@ export function EditRecipient() {
   });
 
   useEffect(() => {
-    if (user?.[0]) {
+    if (user?.[0] && !isAddressEqual(user[0], zeroAddress)) {
       setRecipient(user[0]);
     }
   }, [user]);
@@ -69,7 +75,7 @@ export function EditRecipient() {
 
   useEffect(() => {
     if (error) {
-      toast.error("Claim reward failed", { description: error.message });
+      toast.error("Change recipient failed", { description: error.message });
     }
   }, [error]);
 
@@ -77,14 +83,30 @@ export function EditRecipient() {
     if (!receipt) return;
 
     if (receipt.status === "success") {
-      toast.success("Claimed reward successfully");
+      setOpen(false);
+      onClose?.(true);
+      toast.success("Change recipient successfully");
     } else if (receipt.status === "reverted") {
-      toast.error("Claim reward failed");
+      toast.error("Change recipient failed", {
+        description: "Transaction reverted.",
+      });
     }
-  }, [receipt]);
+  }, [receipt, onClose]);
+
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      setOpen(open);
+
+      if (!open) {
+        onClose?.();
+        setRecipient(undefined);
+      }
+    },
+    [onClose],
+  );
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="ml-2" size="sm">
           Change
@@ -105,10 +127,12 @@ export function EditRecipient() {
           <Button
             type="button"
             onClick={handleSetRecipient}
-            disabled={isPending || isLoading || recipient === user?.[0]}
+            disabled={
+              isPending || isLoading || !recipient || recipient === user?.[0]
+            }
           >
             {(isPending || isLoading) && (
-              <Loader2Icon className="mr-2 h-4 w-4 text-amber-600 animate-spin flex-none" />
+              <Loader2Icon className="mr-1 h-4 w-4 animate-spin flex-none" />
             )}
             {isPending || isLoading ? "Changing" : "Change"}
           </Button>

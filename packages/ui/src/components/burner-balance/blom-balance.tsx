@@ -47,7 +47,11 @@ export function BLOMBalance() {
   const formatted = useMemo(() => {
     if (!decimals) return null;
 
-    return dn.format([balance, decimals], { digits: 2, compact: true });
+    return dn.format([balance, decimals], {
+      digits: 2,
+      compact: true,
+      locale: "en",
+    });
   }, [balance, decimals]);
 
   if (isLoading) return <Skeleton className="w-20 h-6" />;

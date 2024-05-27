@@ -43,7 +43,7 @@ export function CurrentSupply() {
         {!isLoading && stats && (
           <div className="text-2xl font-bold flex items-center gap-2">
             {stats
-              ? `${dn.format([stats[2], 18], { compact: true })} (${dn.format(dn.mul(percent, 100), { digits: 2 })}%)`
+              ? `${dn.format([stats[2], 18], { compact: true, locale: "en" })} (${dn.format(dn.mul(percent, 100), { digits: 2, locale: "en" })}%)`
               : "-"}
           </div>
         )}

@@ -55,7 +55,7 @@ export function ClaimableReward() {
 
     if (dn.greaterThan(rewardDn, 0) && dn.lessThan(rewardDn, 1)) return "< 1";
 
-    return dn.format(rewardDn, { compact: true });
+    return dn.format(rewardDn, { compact: true, locale: "en" });
   }, [claimableReward, decimals]);
 
   const isLoading = isLoadingUser || isLoadingBlomAddress || isLoadingDecimals;
@@ -115,7 +115,7 @@ export function ClaimableReward() {
                 }
               >
                 {(isPending || isLoadingReceipt) && (
-                  <Loader2Icon className="mr-2 h-4 w-4 text-amber-600 animate-spin flex-none" />
+                  <Loader2Icon className="mr-1 h-4 w-4 animate-spin" />
                 )}
                 {isPending || isLoadingReceipt ? "Claiming" : "Claim"}
               </Button>

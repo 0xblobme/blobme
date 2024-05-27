@@ -90,8 +90,8 @@ export function BurnerMine() {
         </div>
         {blobContent !== "" && (
           <Button
-            className="flex-auto xl:flex-1 px-4 min-h-11 overflow-hidden"
-            variant="outline"
+            className="flex-auto xl:flex-1 px-4 min-h-11 overflow-hidden text-foreground"
+            variant="default"
             size="lg"
             onClick={() => setOpenBlobSelector(true)}
             disabled={mining}
@@ -120,7 +120,7 @@ export function BurnerMine() {
         <div />
         <div>
           <Button
-            className="max-w-full w-full h-12 rounded-full"
+            className="max-w-full w-full h-12 rounded-full text-foreground text-lg"
             size="lg"
             onClick={handleClick}
             disabled={
@@ -171,7 +171,7 @@ export function BurnerMine() {
                   pre-mined supply.
                 </p>
                 <h4 className="scroll-m-20 text-base font-semibold tracking-tight [&:not(:first-child)]:mt-4">
-                  Step 1: Enter a &quot;burner&quot; private key
+                  Step 1: Create a &quot;burner&quot; private key
                 </h4>
                 <p className="text-sm leading-7 [&:not(:first-child)]:mt-2">
                   It is not currently possible to create blob-carrying mining

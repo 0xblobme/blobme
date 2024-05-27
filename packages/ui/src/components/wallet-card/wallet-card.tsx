@@ -65,10 +65,10 @@ export function WalletCard() {
       <CardContent className="space-y-8">
         <div className="space-y-2">
           <div>Address</div>
-          <div className="group flex items-center p-4 bg-muted rounded-lg overflow-hidden">
-            <span className="truncate">{minerAddress}</span>
+          <div className="flex items-center p-4 bg-muted rounded-lg overflow-hidden">
+            <span className="truncate">{minerAddress ?? " "}</span>
             <Button
-              className="inline-flex md:hidden group-hover:inline-flex w-6 h-6 ml-2"
+              className="inline-flex w-6 h-6 ml-2"
               variant="ghost"
               size="icon"
               onClick={handleCopyMinerAddress}

@@ -17,6 +17,7 @@ export function ETHBalance() {
     () =>
       dn.format([data?.value ?? 0n, data?.decimals ?? 18], {
         digits: 6,
+        locale: "en",
       }),
     [data],
   );

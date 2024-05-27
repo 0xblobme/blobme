@@ -73,7 +73,7 @@ export function RewardPerTx() {
 
     if (dn.lessThan(rewardDn, 1)) return "< 1";
 
-    return dn.format(rewardDn, { digits: 4, compact: true });
+    return dn.format(rewardDn, { digits: 4, compact: true, locale: "en" });
   }, [reward, decimals]);
 
   const isLoading = useMemo(

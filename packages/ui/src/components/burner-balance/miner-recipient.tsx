@@ -21,7 +21,11 @@ export function MinerRecipient() {
   const blobmeAddress = useBlobmeAddress();
   const { minerAddress } = useMiner();
 
-  const { data: user, isLoading: isLoadingUser } = useReadBlobmeUsers({
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    refetch,
+  } = useReadBlobmeUsers({
     chainId,
     address: blobmeAddress,
     args: [minerAddress!],
@@ -45,6 +49,15 @@ export function MinerRecipient() {
     }
   }, [recipient]);
 
+  const handleClose = useCallback(
+    (success?: boolean) => {
+      if (success) {
+        refetch();
+      }
+    },
+    [refetch],
+  );
+
   return (
     <div className="grid gap-3">
       <div className="font-semibold">Recipient</div>
@@ -65,7 +78,7 @@ export function MinerRecipient() {
                   <CopyIcon className="w-4 h-4" />
                 </Button>
               </div>
-              <EditRecipient />
+              <EditRecipient onClose={handleClose} />
             </>
           )}
         </div>

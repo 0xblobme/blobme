@@ -53,15 +53,15 @@ export function BurnerBalance() {
         <Separator className="my-4" />
         <div className="grid gap-3">
           <div className="font-semibold">Balance</div>
-          <ul className="grid gap-3">
+          <ul className="grid gap-1">
             <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">ETH</span>
+              <span>ETH</span>
               <span>
                 <ETHBalance />
               </span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">BLOM</span>
+              <span>BLOM</span>
               <span>
                 <BLOMBalance />
               </span>

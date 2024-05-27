@@ -27,7 +27,7 @@ export function MaxSupply() {
         {isLoading && !data && <Skeleton className="h-8 w-1/2" />}
         {!isLoading && data && (
           <div className="text-2xl font-bold flex items-center gap-2">
-            {dn.format([data, 18], { compact: true })}
+            {dn.format([data, 18], { compact: true, locale: "en" })}
           </div>
         )}
         <p className="text-xs text-muted-foreground"></p>

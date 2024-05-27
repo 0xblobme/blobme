@@ -78,7 +78,7 @@ export function RewardCurrentEpoch() {
 
     if (dn.greaterThan(rewardDn, 0) && dn.lessThan(rewardDn, 1)) return "< 1";
 
-    return dn.format(rewardDn, { compact: true });
+    return dn.format(rewardDn, { compact: true, locale: "en" });
   }, [reward]);
 
   return (
