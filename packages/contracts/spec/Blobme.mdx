@@ -30,12 +30,12 @@ with the rallying cry "MAKE ETHEREUM GREAT AGAIN".
 
 ### Parameters
 
-| Constant | Value |
-| - | - |
-| `MAX_SUPPLY` | `210000000000` |
-| `EPOCH_SECONDS` | `10800` |
-| `HALVING_EPOCHS` | `56` |
-| `INITIAL_EPOCH_REWARD` | `1728000000` |
+| Constant               | Value          |
+| ---------------------- | -------------- |
+| `MAX_SUPPLY`           | `210000000000` |
+| `EPOCH_SECONDS`        | `10800`        |
+| `HALVING_EPOCHS`       | `56`           |
+| `INITIAL_EPOCH_REWARD` | `1728000000`   |
 
 ### Contracts
 
@@ -43,21 +43,23 @@ with the rallying cry "MAKE ETHEREUM GREAT AGAIN".
 
 The only contract that can mint $BLOM tokens. It is responsible for managing the memecoin distribution mechanism.
 
-*epoch*
+_epoch_
 
 Returns the current epoch.
 
 ```solidity
 function epoch() public view returns (uint256);
 ```
-*nextHalvingEpoch*
+
+_nextHalvingEpoch_
 
 Returns the next halving epoch.
 
 ```solidity
 function nextHalvingEpoch() public view returns (uint256);
 ```
-*epochReward*
+
+_epochReward_
 
 Returns the reward of the epoch `epoch`.
 
@@ -65,7 +67,7 @@ Returns the reward of the epoch `epoch`.
 function epochReward(uint256 epoch) public view returns (uint256);
 ```
 
-*mine*
+_mine_
 
 Mine to earn reward with a valid predefined blob.
 The method will access the versioned hash of the 0-th blob associated with the current transaction
@@ -75,7 +77,7 @@ using `blobhash(0)`. It will check if the hash is within the predefined valid bl
 function mine() external;
 ```
 
-*claimReward*
+_claimReward_
 
 Claim reward for the previous epoch.
 
@@ -83,7 +85,7 @@ Claim reward for the previous epoch.
 function claimReward(address claimer) public;
 ```
 
-*setStartEpoch*
+_setStartEpoch_
 
 Set the start epoch. Only by `Admin`.
 
@@ -91,7 +93,7 @@ Set the start epoch. Only by `Admin`.
 function setStartEpoch(uint256 startEpoch_) external onlyOwner;
 ```
 
-*setBlobHash*
+_setBlobHash_
 
 Add or remove a blob hash of valid message blob. Only by `Admin`.
 
@@ -107,7 +109,7 @@ As such, we immediately have the ability to list $BLOM on decentralized exchange
 In addition to [OpenZeppelin's ERC-20 contract](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20),
 we add the following methods.
 
-*mint*
+_mint_
 
 Creates a `value` amount of tokens and assigns them to `account`. Only by the `Blobme` contract.
 
