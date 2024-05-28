@@ -142,7 +142,7 @@ export function BurnerMine() {
                 ? "Stop mining"
                 : pendingTxHash
                   ? "Stopping mining"
-                  : "MINE"
+                  : "Mine"
               : mining
                 ? "Mining"
                 : "Mine"}
