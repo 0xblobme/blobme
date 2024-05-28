@@ -36,7 +36,7 @@ export function Footer() {
             </Link>
             <Link
               className=""
-              href="https://discord.com"
+              href="https://discord.gg/9aNhYdZUSv"
               target="_blank"
               rel="noreferrer"
             >
