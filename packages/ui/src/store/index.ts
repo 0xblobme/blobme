@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, createStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type { Hex } from "viem";
 import { holesky } from "viem/chains";
@@ -10,7 +10,8 @@ export const chainIdAtom = atomWithStorage<SUPPORTED_CHAIN_ID>(
   holesky.id,
 );
 
-export const miningAtom = atomWithStorage("blobme.mining", false);
+export const miningAtom = atom(false);
+export const miningStore = createStore();
 
 export const autoModeAtom = atomWithStorage("blobme.autoMine", false);
 
@@ -46,16 +47,12 @@ export const cachedPendingTxHashAtom = atomWithStorage<Hex | undefined>(
   undefined,
 );
 
-export const isSendingTxAtom = atom(false);
-
 export enum MiningStatus {
   Idle = "idle",
   Sending = "sending",
   Waiting = "waiting",
   Success = "success",
 }
-
-export enum MiningStatus1 {}
 
 export const miningStatusAtom = atom<MiningStatus>(MiningStatus.Idle);
 

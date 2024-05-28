@@ -8,7 +8,6 @@ import { useEffect, useMemo } from "react";
 import {
   MiningStatus,
   chainIdAtom,
-  isSendingTxAtom,
   miningAtom,
   miningStatusAtom,
   pendingTxHashAtom,
@@ -22,7 +21,6 @@ export function PendingTx() {
   const chainId = useAtomValue(chainIdAtom);
   const mining = useAtomValue(miningAtom);
   const [hash, setPendingTxHash] = useAtom(pendingTxHashAtom);
-  const isSendingTx = useAtomValue(isSendingTxAtom);
   const { isLoading, isFetched } = useWaitForTransactionReceipt({
     chainId,
     hash,
@@ -65,7 +63,7 @@ export function PendingTx() {
                 )}
               />
             )}
-            {miningStatus === MiningStatus.Success && (
+            {miningStatus === MiningStatus.Success && hash && (
               <CircleCheckBigIcon className="mr-2 h-4 w-4 text-green-600 flex-none" />
             )}
             {hash && (

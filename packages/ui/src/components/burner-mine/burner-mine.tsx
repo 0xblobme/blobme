@@ -12,6 +12,7 @@ import {
   blobContentAtom,
   chainIdAtom,
   miningAtom,
+  miningStore,
   pendingTxHashAtom,
 } from "@/store";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,7 @@ export function BurnerMine() {
 
   const handleClick = useCallback(() => {
     if (mining) {
+      miningStore.set(miningAtom, false);
       setMining(false);
     } else {
       mine(autoMode);

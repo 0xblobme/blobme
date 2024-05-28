@@ -35,9 +35,9 @@ import {
   MiningStatus,
   cachedPendingTxHashAtom,
   chainIdAtom,
-  isSendingTxAtom,
   miningAtom,
   miningStatusAtom,
+  miningStore,
   pendingTxHashAtom,
   privateKeyAtom,
 } from "@/store";
@@ -46,11 +46,10 @@ import { useBlobmeAddress } from "./use-blobme-address";
 export function useMiner() {
   const chainId = useAtomValue(chainIdAtom);
   const blobmeAddress = useBlobmeAddress();
-  const [mining, setMining] = useAtom(miningAtom);
+  const setMining = useSetAtom(miningAtom);
   const [privateKey, setPrivateKey] = useAtom(privateKeyAtom);
   const setPendingTxHash = useSetAtom(pendingTxHashAtom);
   const setCachedPendingTxHash = useSetAtom(cachedPendingTxHashAtom);
-  const setIsSendingTx = useSetAtom(isSendingTxAtom);
   const setMiningStatus = useSetAtom(miningStatusAtom);
 
   const generateWallet = useCallback(() => {
@@ -72,7 +71,8 @@ export function useMiner() {
       if (!privateKey || !minerAddress) return;
 
       setMining(true);
-      let mining = true;
+      miningStore.set(miningAtom, true);
+      let mining = miningStore.get(miningAtom);
 
       const kzg = await loadKZG();
 
@@ -112,12 +112,10 @@ export function useMiner() {
         const blobBaseFee = await getBlobBaseFee(getBlobBaseFeeClient);
         const maxFeePerBlobGas = blobBaseFee + blobBaseFee / 2n; // blobBaseFee * 1.5
 
-        mining = localStorage.getItem("blobme.mining") === "true";
-
+        mining = miningStore.get(miningAtom);
         if (!mining) break;
 
         try {
-          setIsSendingTx(true);
           setMiningStatus(MiningStatus.Sending);
 
           await new Promise((resolve) => setTimeout(resolve, 500));
@@ -138,15 +136,15 @@ export function useMiner() {
           });
 
           setMiningStatus(MiningStatus.Waiting);
-          setIsSendingTx(false);
-          setPendingTxHash(hash);
           setCachedPendingTxHash(hash);
+          setPendingTxHash(hash);
 
           const { transactionHash } = await waitForTransactionReceipt(
             getBlobBaseFeeClient,
             { hash },
           );
 
+          error = null;
           setMiningStatus(MiningStatus.Success);
 
           toast.success("Send mining transaction successful", {
@@ -176,8 +174,6 @@ export function useMiner() {
           await new Promise((r) => setTimeout(r, 1000));
         } catch (e) {
           console.log(e);
-
-          mining = localStorage.getItem("blobme.mining") === "true";
 
           error = e as
             | WaitForTransactionReceiptTimeoutErrorType
@@ -233,16 +229,15 @@ export function useMiner() {
       }
 
       setMiningStatus(MiningStatus.Idle);
-      setIsSendingTx(false);
+      miningStore.set(miningAtom, false);
       setMining(false);
     },
     [
       privateKey,
       minerAddress,
-      setMining,
       chainId,
-      setIsSendingTx,
       setMiningStatus,
+      setMining,
       blobmeAddress,
       setPendingTxHash,
       setCachedPendingTxHash,
