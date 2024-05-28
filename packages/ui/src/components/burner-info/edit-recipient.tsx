@@ -94,6 +94,7 @@ function EditRecipientInner({ onSuccess }: { onSuccess?: () => void }) {
   const { data: receipt, isLoading } = useWaitForTransactionReceipt({
     chainId,
     hash,
+    timeout: 60 * 1000,
   });
 
   const handleSetRecipient = useCallback(() => {
@@ -109,7 +110,9 @@ function EditRecipientInner({ onSuccess }: { onSuccess?: () => void }) {
 
   useEffect(() => {
     if (error) {
-      toast.error("Change recipient failed", { description: error.message });
+      toast.error("Change recipient failed", {
+        description: (error as any).detail || (error as any).message,
+      });
     }
   }, [error]);
 

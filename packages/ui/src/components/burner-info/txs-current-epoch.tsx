@@ -34,7 +34,7 @@ export function TxsCurrentEpoch() {
   );
 
   return (
-    <div className="grid">
+    <div className="grid gap-1">
       <div className="font-semibold">Mining txs at current epoch</div>
       <div className="grid gap-3">
         <div className="flex items-center justify-between">

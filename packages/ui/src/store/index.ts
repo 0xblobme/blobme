@@ -5,15 +5,12 @@ import { holesky } from "viem/chains";
 
 import { SUPPORTED_CHAIN_ID } from "@/config";
 
-export const chainIdAtom = atomWithStorage<SUPPORTED_CHAIN_ID>(
-  "blobme.chainId",
-  holesky.id,
-);
+export const chainIdAtom = atom<SUPPORTED_CHAIN_ID>(holesky.id);
 
 export const miningAtom = atom(false);
 export const miningStore = createStore();
 
-export const autoModeAtom = atomWithStorage("blobme.autoMine", false);
+export const autoModeAtom = atom(false);
 
 export const privateKeyAtom = atomWithStorage<Hex | undefined>(
   "blobme.privateKey",
@@ -30,15 +27,7 @@ export const pendingTransactionAtom = atomWithStorage<Hex | undefined>(
   undefined,
 );
 
-export const blobContentAtom = atomWithStorage<string>(
-  "blobme.blobContent",
-  "",
-);
-
-export const blobContentsAtom = atomWithStorage<string[]>(
-  "blobme.blobContents",
-  [],
-);
+export const blobContentAtom = atom<string>("");
 
 export const pendingTxHashAtom = atom<Hex | undefined>(undefined);
 

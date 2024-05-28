@@ -22,7 +22,7 @@ export function ETHBalance() {
     [data],
   );
 
-  if (isLoading || !data) return <Skeleton className="w-14 h-6" />;
+  if (isLoading) return <Skeleton className="w-14 h-6" />;
 
   return <>{formatted}</>;
 }

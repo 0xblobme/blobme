@@ -78,11 +78,11 @@ export function RewardCurrentEpoch() {
 
     if (dn.greaterThan(rewardDn, 0) && dn.lessThan(rewardDn, 1)) return "< 1";
 
-    return dn.format(rewardDn, { compact: true, locale: "en" });
+    return dn.format(rewardDn, { digits: 2, compact: true, locale: "en" });
   }, [reward]);
 
   return (
-    <div className="grid">
+    <div className="grid gap-1">
       <div className="flex items-center font-semibold space-x-2">
         <span>Estimated reward at current epoch</span>
         <TooltipProvider>

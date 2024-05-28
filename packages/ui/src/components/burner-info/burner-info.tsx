@@ -55,15 +55,15 @@ export function BurnerInfo() {
           <div className="font-semibold">Balance</div>
           <ul className="grid gap-1">
             <li className="flex items-center justify-between">
-              <span>ETH</span>
-              <span>
-                <ETHBalance />
-              </span>
-            </li>
-            <li className="flex items-center justify-between">
               <span>BLOM</span>
               <span>
                 <BLOMBalance />
+              </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span>ETH</span>
+              <span>
+                <ETHBalance />
               </span>
             </li>
           </ul>

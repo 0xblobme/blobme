@@ -53,7 +53,7 @@ export default function CurrentEpochReward() {
 
     if (dnum.lessThan(rewardDnum, 1)) return "< 1";
 
-    return dnum.format(rewardDnum, { digits: 2, compact: true });
+    return dnum.format(rewardDnum, { digits: 2, compact: true, locale: "en" });
   }, [epochReward, decimals]);
 
   const isLoading = useMemo(

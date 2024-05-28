@@ -7,9 +7,7 @@ import {
 } from "viem/accounts";
 import { loadKZG } from "kzg-wasm";
 import {
-  CallExecutionErrorType,
   SendTransactionErrorType,
-  TransactionExecutionErrorType,
   WaitForTransactionReceiptErrorType,
   WaitForTransactionReceiptTimeoutErrorType,
   encodeFunctionData,
@@ -141,7 +139,7 @@ export function useMiner() {
 
           const { transactionHash } = await waitForTransactionReceipt(
             getBlobBaseFeeClient,
-            { hash },
+            { hash, timeout: autoMode ? 60 * 1000 : 2 * 60 * 1000 },
           );
 
           error = null;
@@ -172,45 +170,32 @@ export function useMiner() {
           setPendingTxHash(undefined);
 
           await new Promise((r) => setTimeout(r, 1000));
-        } catch (e) {
-          console.log(e);
+        } catch (err) {
+          console.log(err);
 
-          error = e as
-            | WaitForTransactionReceiptTimeoutErrorType
-            | WaitForTransactionReceiptErrorType
-            | TransactionExecutionErrorType
+          error = err as
             | SendTransactionErrorType
-            | CallExecutionErrorType;
+            | WaitForTransactionReceiptErrorType
+            | WaitForTransactionReceiptTimeoutErrorType;
 
           if (error.name === "TransactionExecutionError") {
             if (
-              mining &&
-              (error.cause.name === "NonceTooLowError" ||
-                error.cause.name === "NonceTooHighError")
-            ) {
-              continue;
-            }
-
-            if (error.cause.name === "InsufficientFundsError") {
-              // toast.error("Insufficient balance");
-            }
-          } else if (error.name === "CallExecutionError") {
-            if (
-              mining &&
-              (error.cause.name === "NonceTooLowError" ||
-                error.cause.name === "NonceTooHighError")
+              error.cause.name === "NonceTooLowError" ||
+              error.cause.name === "NonceTooHighError"
             ) {
               continue;
             }
 
             if (
-              mining &&
+              error.cause.name === "ExecutionRevertedError" &&
               error.cause.details ===
                 "execution reverted: already mined in this block"
             ) {
               continue;
             }
-          } else if (error.name === "WaitForTransactionReceiptTimeoutError") {
+          }
+
+          if (error.name === "WaitForTransactionReceiptTimeoutError") {
             continue;
           }
 

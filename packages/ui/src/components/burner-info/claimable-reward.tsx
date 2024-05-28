@@ -55,7 +55,7 @@ export function ClaimableReward() {
 
     if (dn.greaterThan(rewardDn, 0) && dn.lessThan(rewardDn, 1)) return "< 1";
 
-    return dn.format(rewardDn, { compact: true, locale: "en" });
+    return dn.format(rewardDn, { digits: 2, compact: true, locale: "en" });
   }, [claimableReward, decimals]);
 
   const isLoading = isLoadingUser || isLoadingBlomAddress || isLoadingDecimals;

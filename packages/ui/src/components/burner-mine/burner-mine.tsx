@@ -92,8 +92,8 @@ export function BurnerMine() {
         </div>
         {blobContent !== "" && (
           <Button
-            className="flex-auto xl:flex-1 px-4 min-h-11 overflow-hidden text-foreground"
-            variant="default"
+            className="flex-auto xl:flex-1 px-4 min-h-11 overflow-hidden text-foreground border-primary"
+            variant="outline"
             size="lg"
             onClick={() => setOpenBlobSelector(true)}
             disabled={mining}
@@ -122,7 +122,7 @@ export function BurnerMine() {
         <div />
         <div>
           <Button
-            className="max-w-full w-full h-12 rounded-full text-foreground text-lg"
+            className="max-w-full w-full h-12 rounded-full text-base"
             size="lg"
             onClick={handleClick}
             disabled={
@@ -145,7 +145,7 @@ export function BurnerMine() {
                   : "MINE"
               : mining
                 ? "Mining"
-                : "MINE"}
+                : "Mine"}
           </Button>
         </div>
         <div className="flex items-center justify-center xl:justify-start">
