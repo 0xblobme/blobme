@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <div className=" relative space-y-12 container flex-grow flex flex-col justify-center pt-40 md:pt-60 pb-10 md:pb-24">
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-center">
             Mine{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
@@ -17,7 +17,9 @@ export default function Home() {
             </span>{" "}
             on Ethereum EIP-4844 Blobs
           </h1>
-          <p className="text-center text-lg"></p>
+          <p className="text-center text-lg">
+            Experience the Fun with Blobme: Your Path to Memecoin Riches!
+          </p>
         </div>
         <div className="flex justify-center">
           <Button
