@@ -155,11 +155,11 @@ export function BurnerMine() {
                 How it work?
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-screen overflow-y-auto sm:max-w-2xl">
+            <DialogContent className="max-h-dvh overflow-y-auto sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>How it work?</DialogTitle>
               </DialogHeader>
-              <div className="overflow-y-auto">
+              <div>
                 <p className="text-base leading-7">
                   $BLOM is a memecoin mined on Ethereum EIP-4844 Blobs. It is
                   designed for fair token distribution and loud preaching. You

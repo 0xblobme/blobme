@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import Banner from "@/assets/banner.png";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Banner from "@/assets/banner.png";
 
 export default function Home() {
   return (
@@ -37,8 +37,8 @@ export default function Home() {
         />
       </div>
       <section>
-        <div className="container grid grid-cols-1 md:grid-cols-8 py-40 gap-y-12 md:gap-12 items-end">
-          <div className="col-span-3">
+        <div className="container lg:flex py-40 space-y-12 lg:space-x-12 items-end">
+          <div className="col-span-3 w-full lg:w-[444px] flex-none">
             <AspectRatio ratio={1}>
               <Image
                 src={Banner}
@@ -54,10 +54,7 @@ export default function Home() {
                 "linear-gradient(#fff 10px,#0000 40px calc(100% - 40px),#fff calc(100% - 10px)) local,var(--g) top /100% 200%,var(--g) bottom/100% 200%",
             }}
           >
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-center pb-8">
-              About
-            </h1>
-            <div className="md:max-h-96 overflow-y-scroll text-lg">
+            <div className="lg:max-h-96 overflow-y-scroll text-lg">
               <p className="leading-7 [&:not(:first-child)]:mt-6">
                 In the vibrant world of crypto, there&apos;s this thing called
                 Blobme—it&apos;s like crashing a revolution party! It&apos;s not
