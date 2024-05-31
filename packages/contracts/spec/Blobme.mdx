@@ -93,12 +93,12 @@ Set the start epoch. Only by `Admin`.
 function setStartEpoch(uint256 startEpoch_) external onlyOwner;
 ```
 
-_setBlobHash_
+_setBlobHashes_
 
-Add or remove a blob hash of valid message blob. Only by `Admin`.
+Add or remove hashes of valid message blobs. Only by `Admin`.
 
 ```solidity
-function setBlobHash(bytes32 hash, bool valid) external onlyOwner;
+function setBlobHashes(bytes32[] calldata hashes, bool valid) external onlyOwner;
 ```
 
 #### BlomToken
