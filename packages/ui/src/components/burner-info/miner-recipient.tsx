@@ -1,23 +1,30 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
 import { useAtomValue } from "jotai";
+import Image from "next/image";
+import copy from "copy-to-clipboard";
+import { toast } from "sonner";
+import { CopyIcon } from "lucide-react";
+import { isAddressEqual, zeroAddress } from "viem";
 
 import { chainIdAtom } from "@/store";
 import { useBlobmeAddress } from "@/hooks/use-blobme-address";
 import { useReadBlobmeUsers } from "@/lib/blobme";
 import { useMiner } from "@/hooks/use-miner";
-import { useCallback, useMemo } from "react";
-import { isAddressEqual, zeroAddress } from "viem";
 import { shortenAddress } from "@/utils";
-import { Button } from "../ui/button";
-import { CopyIcon, SquarePenIcon } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import EtherscanIcon from "@/assets/etherscan-dark.svg";
+import { SUPPORTED_CHAINS } from "@/config";
 import { EditRecipient } from "./edit-recipient";
-import copy from "copy-to-clipboard";
-import { toast } from "sonner";
 
 export function MinerRecipient() {
   const chainId = useAtomValue(chainIdAtom);
+  const chain = useMemo(
+    () => SUPPORTED_CHAINS.find((c) => c.id === chainId),
+    [chainId],
+  );
   const blobmeAddress = useBlobmeAddress();
   const { minerAddress } = useMiner();
 
@@ -70,7 +77,26 @@ export function MinerRecipient() {
               <div className="group flex items-center overflow-hidden">
                 <span className="truncate">{shortenAddress(recipient)}</span>
                 <Button
-                  className="inline-flex md:hidden group-hover:inline-flex w-6 h-6 ml-2"
+                  className="w-6 h-6 ml-1"
+                  variant="ghost"
+                  size="icon"
+                  asChild
+                >
+                  <a
+                    href={`${chain?.blockExplorers?.default.url}/address/${minerAddress}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Image
+                      src={EtherscanIcon}
+                      width={16}
+                      height={16}
+                      alt="Etherscan Logo"
+                    />
+                  </a>
+                </Button>
+                <Button
+                  className="inline-flex md:hidden group-hover:inline-flex w-6 h-6 ml-1"
                   variant="ghost"
                   size="icon"
                   onClick={handleCopyRecipientAddress}

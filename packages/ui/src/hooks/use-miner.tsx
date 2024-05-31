@@ -31,6 +31,7 @@ import { BLOBS } from "@/config";
 import { wagmiConfig, wagmiConfigForGetBlobBaseFee } from "@/lib/wagmi";
 import {
   MiningStatus,
+  blobContentAtom,
   cachedPendingTxHashAtom,
   chainIdAtom,
   miningAtom,
@@ -49,6 +50,7 @@ export function useMiner() {
   const setPendingTxHash = useSetAtom(pendingTxHashAtom);
   const setCachedPendingTxHash = useSetAtom(cachedPendingTxHashAtom);
   const setMiningStatus = useSetAtom(miningStatusAtom);
+  const blobContentValue = useAtomValue(blobContentAtom);
 
   const generateWallet = useCallback(() => {
     setPrivateKey(generatePrivateKey());
@@ -93,9 +95,7 @@ export function useMiner() {
       let error;
 
       do {
-        let blobContent = JSON.parse(
-          localStorage.getItem("blobme.blobContent") ?? "null",
-        );
+        let blobContent = blobContentValue;
         if (
           !blobContent ||
           blobContent === '""' ||
@@ -115,8 +115,6 @@ export function useMiner() {
 
         try {
           setMiningStatus(MiningStatus.Sending);
-
-          await new Promise((resolve) => setTimeout(resolve, 500));
 
           const nonce = await getTransactionCount(getBlobBaseFeeClient, {
             address: minerAddress,
@@ -145,23 +143,23 @@ export function useMiner() {
           error = null;
           setMiningStatus(MiningStatus.Success);
 
-          toast.success("Send mining transaction successful", {
-            description: (
-              <div>
-                View on explorer{" "}
-                <Button className="h-auto p-0" variant="link" asChild>
-                  <a
-                    href={`${client.chain.blockExplorers?.default.url}/tx/${transactionHash}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {shortenTxHash(transactionHash)}
-                    <ExternalLinkIcon className="w-4 h-4 ml-1" />
-                  </a>
-                </Button>
-              </div>
-            ),
-          });
+          // toast.success("Send mining transaction successful", {
+          //   description: (
+          //     <div>
+          //       View on explorer{" "}
+          //       <Button className="h-auto p-0" variant="link" asChild>
+          //         <a
+          //           href={`${client.chain.blockExplorers?.default.url}/tx/${transactionHash}`}
+          //           target="_blank"
+          //           rel="noreferrer"
+          //         >
+          //           {shortenTxHash(transactionHash)}
+          //           <ExternalLinkIcon className="w-4 h-4 ml-1" />
+          //         </a>
+          //       </Button>
+          //     </div>
+          //   ),
+          // });
 
           await new Promise((r) => setTimeout(r, 500));
 
@@ -169,7 +167,7 @@ export function useMiner() {
           setCachedPendingTxHash(undefined);
           setPendingTxHash(undefined);
 
-          await new Promise((r) => setTimeout(r, 1000));
+          await new Promise((r) => setTimeout(r, 500));
         } catch (err) {
           console.log(err);
 
@@ -192,6 +190,10 @@ export function useMiner() {
                 "execution reverted: already mined in this block"
             ) {
               continue;
+            }
+
+            if (error.cause.name === "InvalidInputRpcError") {
+              // replacement transaction underpriced: new tx gas fee cap 4534026572 <= 4451270534 queued + 100% replacement penalty
             }
           }
 
@@ -226,6 +228,7 @@ export function useMiner() {
       blobmeAddress,
       setPendingTxHash,
       setCachedPendingTxHash,
+      blobContentValue,
     ],
   );
 

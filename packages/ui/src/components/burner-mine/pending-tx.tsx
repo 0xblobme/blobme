@@ -1,14 +1,12 @@
 "use client";
 
-import { useAtom, useAtomValue } from "jotai";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { useMemo } from "react";
+import { useAtomValue } from "jotai";
 import { CircleCheckBigIcon, Loader2Icon } from "lucide-react";
-import { useEffect, useMemo } from "react";
 
 import {
   MiningStatus,
   chainIdAtom,
-  miningAtom,
   miningStatusAtom,
   pendingTxHashAtom,
 } from "@/store";
@@ -19,25 +17,13 @@ import { SUPPORTED_CHAINS } from "@/config";
 
 export function PendingTx() {
   const chainId = useAtomValue(chainIdAtom);
-  const mining = useAtomValue(miningAtom);
-  const [hash, setPendingTxHash] = useAtom(pendingTxHashAtom);
-  const { isLoading, isFetched } = useWaitForTransactionReceipt({
-    chainId,
-    hash,
-  });
-
   const miningStatus = useAtomValue(miningStatusAtom);
+  const pendingTxhash = useAtomValue(pendingTxHashAtom);
 
   const chain = useMemo(
     () => SUPPORTED_CHAINS.find((c) => c.id === chainId),
     [chainId],
   );
-
-  useEffect(() => {
-    if (isFetched && !mining) {
-      setPendingTxHash(undefined);
-    }
-  }, [mining, isFetched, setPendingTxHash]);
 
   return (
     <div className="h-24 space-y-1">
@@ -63,23 +49,33 @@ export function PendingTx() {
                 )}
               />
             )}
-            {miningStatus === MiningStatus.Success && hash && (
+            {miningStatus === MiningStatus.Success && pendingTxhash && (
               <CircleCheckBigIcon className="mr-2 h-4 w-4 text-green-600 flex-none" />
             )}
-            {hash && (
+            {pendingTxhash && (
               <div className="leading-none">
                 Waiting for{" "}
                 <Button className="h-auto p-0" variant="link">
                   <a
-                    href={`${chain?.blockExplorers?.default.url}/tx/${hash}`}
+                    href={`${chain?.blockExplorers?.default.url}/tx/${pendingTxhash}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shortenTxHash(hash)}
+                    {shortenTxHash(pendingTxhash)}
                   </a>
                 </Button>{" "}
                 to complete...
               </div>
+            )}
+          </div>
+          <div className="flex items-start">
+            {miningStatus === MiningStatus.Success && (
+              <>
+                <CircleCheckBigIcon className="mr-2 h-4 w-4 text-green-600 flex-none" />
+                <div className="leading-none">
+                  Send mining transaction successful
+                </div>
+              </>
             )}
           </div>
         </>

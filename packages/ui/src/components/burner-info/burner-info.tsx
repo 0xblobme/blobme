@@ -3,7 +3,9 @@
 import { CopyIcon } from "lucide-react";
 import { toast } from "sonner";
 import copy from "copy-to-clipboard";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import Image from "next/image";
+import { useAtomValue } from "jotai";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -11,6 +13,9 @@ import { useMiner } from "@/hooks/use-miner";
 import { shortenAddress } from "@/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import EtherscanIcon from "@/assets/etherscan-dark.svg";
+import { chainIdAtom } from "@/store";
+import { SUPPORTED_CHAINS } from "@/config";
 import { BLOMBalance } from "./blom-balance";
 import { ETHBalance } from "./eth-balance";
 import { MinerRecipient } from "./miner-recipient";
@@ -19,7 +24,12 @@ import { TxsCurrentEpoch } from "./txs-current-epoch";
 import { RewardCurrentEpoch } from "./reward-current-epoch";
 
 export function BurnerInfo() {
+  const chainId = useAtomValue(chainIdAtom);
   const { minerAddress } = useMiner();
+  const chain = useMemo(
+    () => SUPPORTED_CHAINS.find((c) => c.id === chainId),
+    [chainId],
+  );
   const handleCopyMinerAddress = useCallback(() => {
     if (!minerAddress) return;
     const success = copy(minerAddress);
@@ -40,7 +50,26 @@ export function BurnerInfo() {
             <div className="group flex items-center">
               <span>{shortenAddress(minerAddress)}</span>
               <Button
-                className="inline-flex md:hidden group-hover:inline-flex w-6 h-6 ml-2"
+                className="w-6 h-6 ml-1"
+                variant="ghost"
+                size="icon"
+                asChild
+              >
+                <a
+                  href={`${chain?.blockExplorers?.default.url}/address/${minerAddress}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image
+                    src={EtherscanIcon}
+                    width={16}
+                    height={16}
+                    alt="Etherscan Logo"
+                  />
+                </a>
+              </Button>
+              <Button
+                className="inline-flex md:hidden group-hover:inline-flex w-6 h-6 ml-1"
                 variant="ghost"
                 size="icon"
                 onClick={handleCopyMinerAddress}
