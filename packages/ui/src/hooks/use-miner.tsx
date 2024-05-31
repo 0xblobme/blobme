@@ -137,7 +137,7 @@ export function useMiner() {
 
           const { transactionHash } = await waitForTransactionReceipt(
             getBlobBaseFeeClient,
-            { hash, timeout: autoMode ? 60 * 1000 : 2 * 60 * 1000 },
+            { hash, timeout: autoMode ? 3 * 60 * 1000 : 5 * 60 * 1000 },
           );
 
           error = null;
